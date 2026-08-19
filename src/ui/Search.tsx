@@ -4,48 +4,48 @@ import FlexSearch from 'flexsearch';
 import type { Feature } from 'geojson';
 import { featureCenter } from '../core/geo';
 import { useAppStore, type SearchHit } from '../core/store';
-import { LAYER_REGISTRY } from '../layers/layer-registry';
-import { loadFeatures } from '../layers/vector-source';
+import { LAYER_BY_ID } from '../layers/layer-registry';
 import { IconSearch } from './icons';
 
 type SearchIndex = InstanceType<(typeof FlexSearch)['Document']>;
 
-const SEARCHABLE = LAYER_REGISTRY.filter((l) => l.metadata.searchableFields?.length);
+/** Layers load lazily, so anything past this per layer would blow up index build time. */
+const MAX_DOCS_PER_LAYER = 20_000;
 
 export default function Search() {
   const locale = useAppStore((s) => s.locale);
   const query = useAppStore((s) => s.searchQuery);
   const hits = useAppStore((s) => s.searchHits);
   const open = useAppStore((s) => s.commandOpen);
+  const collections = useAppStore((s) => s.collections);
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const docs = useRef(new Map<string, SearchHit>());
+  const indexed = useRef(new Set<string>());
   const index = useRef<SearchIndex | null>(null);
   const ar = locale === 'ar';
 
-  useEffect(() => {
-    const idx = new FlexSearch.Document<SearchHit, true>({
+  if (index.current === null) {
+    index.current = new FlexSearch.Document<SearchHit, true>({
       tokenize: 'forward',
       cache: true,
-      document: {
-        id: 'id',
-        index: ['title', 'meta', 'id'],
-        store: true,
-      },
+      document: { id: 'id', index: ['title', 'meta', 'id'], store: true },
     });
-    index.current = idx;
+  }
 
-    void Promise.all(
-      SEARCHABLE.map(async (layer) => {
-        try {
-          const fc = await loadFeatures(layer);
-          fc.features.forEach((f, i) => addDoc(idx, layer.id, f, i, layer.metadata.searchableFields ?? []));
-        } catch (err) {
-          console.warn(`Search index skipped ${layer.id}`, err);
-        }
-      }),
-    );
-  }, []);
+  // Index each layer as its data arrives — layers are fetched lazily, so eagerly
+  // pulling every searchable layer here would defeat that entirely.
+  useEffect(() => {
+    const idx = index.current;
+    if (!idx) return;
+    for (const [layerId, fc] of Object.entries(collections)) {
+      if (!fc || indexed.current.has(layerId)) continue;
+      const fields = LAYER_BY_ID[layerId]?.metadata.searchableFields;
+      if (!fields?.length) continue;
+      indexed.current.add(layerId);
+      fc.features.slice(0, MAX_DOCS_PER_LAYER).forEach((f, i) => addDoc(idx, layerId, f, i, fields));
+    }
+  }, [collections]);
 
   useEffect(() => {
     if (open) {
@@ -89,9 +89,11 @@ export default function Search() {
   ): void {
     const props = (feature.properties ?? {}) as Record<string, unknown>;
     const title = String(
-      props.name_en ?? props.name_ar ?? props.sector_name_en ?? props.building_id ?? props.parking_id ?? `${layerId}-${i}`,
+      props.name_en ?? props.name_ar ?? props.description ?? props[fields[0]] ?? `${layerId}-${i}`,
     );
-    const meta = fields.map((f) => props[f]).filter(Boolean).join(' · ');
+    const meta = [LAYER_BY_ID[layerId]?.title.en, ...fields.map((f) => props[f])]
+      .filter(Boolean)
+      .join(' · ');
     const hit: SearchHit = {
       id: `${layerId}:${String(feature.id ?? i)}`,
       layerId,

@@ -1,226 +1,289 @@
-export type GeometryType =
-  | 'Point'
-  | 'LineString'
-  | 'MultiLineString'
-  | 'Polygon'
-  | 'MultiPolygon';
+/**
+ * Property schemas for the layers produced by `scripts/extract_gdb.py` from
+ * KUUA_Vr2.4GRF.gdb. These document the extract's contract with the layer registry —
+ * the runtime paths work with plain `Feature`/`FeatureCollection` from @types/geojson.
+ *
+ * Every field is optional: the extractor drops keys whose geodatabase value was null or
+ * one of its null sentinels ('-1', ''), so features carry only what is actually populated.
+ */
 
-export interface BaseFeature<T extends GeometryType, P> {
-  type: 'Feature';
-  geometry: { type: T; coordinates: unknown };
-  properties: P;
-  id?: string | number;
+export type LayerGroup = 'adm' | 'bld' | 'net' | 'utl' | 'env';
+
+/** Attribution present on nearly every layer. `branch` names the KAU campus/branch. */
+export interface CommonProps {
+  description?: string;
+  branch?: string;
 }
 
-export interface AdmCampusBoundaryProps {
+/** Polygon layers carry the geodatabase's projected (EPSG:9357) area, in m². */
+export interface AreaProps {
+  area_sqm?: number;
+}
+
+/** Line layers carry the geodatabase's projected length, in metres. */
+export interface LengthProps {
+  length_m?: number;
+}
+
+/** Shared by every pipe/cable network layer. */
+export interface PipeProps extends CommonProps, LengthProps {
+  line_id: string;
+  network_type?: string;
+  status?: string;
+  material?: string;
+  diameter_mm?: number;
+}
+
+// ── adm ──────────────────────────────────────────────────────────────────────
+
+/** Dissolved union of BZoneBoundary — one feature per contiguous site. */
+export interface AdmCampusBoundaryProps extends AreaProps {
   campus_id: string;
-  name_ar: string;
-  name_en: string;
-  area_sqm: number;
-  established_year: number;
 }
 
-export interface AdmZoneProps {
+export interface AdmZoneProps extends CommonProps, AreaProps {
   zone_id: string;
-  sector_name_ar: string;
-  sector_name_en: string;
-  zone_type: 'Academic' | 'Residential' | 'Administrative' | 'Research' | 'Recreational';
-  area_sqm: number;
+  /** 1000…8000. The geodatabase has no zone names; `name_ar` holds its label. */
+  zone_code?: number;
+  name_ar?: string;
 }
 
-export interface AdmParcelProps {
+export interface AdmParcelProps extends CommonProps, AreaProps {
   parcel_id: string;
-  zone_id: string;
-  land_use: 'Academic' | 'Housing' | 'Commercial' | 'Green' | 'Utility';
-  ownership: 'University' | 'Leased' | 'Government';
-  area_sqm: number;
+  name_ar?: string;
+  land_use?: string;
+  status?: string;
 }
 
-export interface BldFootprintProps {
-  building_id: string;
-  name_ar: string;
-  name_en: string;
-  faculty: string;
-  floors_count: number;
-  usage_type:
-    | 'Academic'
-    | 'Administrative'
-    | 'Laboratory'
-    | 'Library'
-    | 'Sports'
-    | 'Residential'
-    | 'Mixed';
-  gross_area_sqm: number;
-  year_built: number;
-  status: 'Active' | 'Under Construction' | 'Renovation' | 'Decommissioned';
+export interface AdmInvestmentProps extends CommonProps, AreaProps {
+  investment_id: string;
+  land_tenure?: string;
+  ownership?: string;
+  usage_status?: string;
+  contract_status?: string;
+  contract_type?: string;
+  investment_type?: string;
 }
 
-export interface BldEntranceProps {
-  entrance_id: string;
+// ── bld ──────────────────────────────────────────────────────────────────────
+
+export interface BldFootprintProps extends CommonProps, AreaProps {
   building_id: string;
-  access_type: 'Main' | 'Secondary' | 'Service' | 'Emergency Only';
-  emergency_exit: boolean;
-  floor_level: number;
-  accessible: boolean;
+  building_no?: string;
+  name_ar?: string;
+  name_en?: string;
+  compound_ar?: string;
+  compound_en?: string;
+  /** e.g. 'Faculty Housing', 'Services', 'Administrative & Academic Male', 'Sports'. */
+  category?: string;
+  /** OCC = occupied, CNS = under construction, REN = renovation. */
+  status?: string;
+  /** Carries -1 as a null sentinel for a handful of rows. */
+  floors_count?: number;
+  /** Measured height; populated for only ~65 buildings. */
+  height_m?: number;
+  construction_year?: number;
+  classrooms?: string;
+  labs?: string;
+  capacity?: string;
+  educational_space_sqm?: number;
 }
 
-export interface BldAmenityProps {
-  amenity_id: string;
-  building_id: string;
-  type:
-    | 'Classroom'
-    | 'Lab'
-    | 'Office'
-    | 'Auditorium'
-    | 'Cafeteria'
-    | 'Prayer Room'
-    | 'Restroom'
-    | 'Elevator'
-    | 'Stairs';
-  floor_level: number;
-  room_number?: string;
+export interface BldRoomProps extends AreaProps {
+  room_id: string;
+  building_id?: string;
+  building_no?: string;
+  name_ar?: string;
+  name_en?: string;
+  department?: string;
+  floor_no?: number;
+  floor_name?: string;
+  room_no?: string;
   capacity?: number;
-  status: 'Operational' | 'Maintenance' | 'Out of Service';
+  student_capacity?: number;
+  classification?: string;
+  usage_ar?: string;
 }
 
-export interface NetRoadProps {
+export interface BldGateProps extends CommonProps {
+  gate_id: string;
+}
+
+export interface BldLandmarkProps extends CommonProps {
+  landmark_id: string;
+  name_ar?: string;
+  name_en?: string;
+}
+
+// ── net ──────────────────────────────────────────────────────────────────────
+
+export interface NetRoadProps extends CommonProps, LengthProps {
   road_id: string;
   name_ar?: string;
   name_en?: string;
-  hierarchy: 'Primary' | 'Secondary' | 'Service' | 'Pedestrian Only';
-  speed_limit_kmh: number;
-  one_way: boolean;
-  surface_type: 'Asphalt' | 'Concrete' | 'Pavers' | 'Gravel';
-  length_m: number;
+  /** 1, 2 or 3. Geodatabase subtype codes; the domain labels are not in the GDB. */
+  subtype?: number;
+  /** 20–100 km/h. The only populated road-hierarchy signal, so the paint uses it. */
+  speed_limit?: number;
+  traffic_direction?: string;
+  street_no?: string;
 }
 
-export interface NetPedestrianPathProps {
+export interface NetPathProps extends LengthProps {
   path_id: string;
-  path_type: 'Sidewalk' | 'Plaza' | 'Bridge' | 'Tunnel' | 'Crosswalk';
-  width_m: number;
-  lighting: boolean;
-  accessible: boolean;
-  length_m: number;
+  description?: string;
+  status?: string;
+  surface_type?: string;
+  width_m?: number;
+  /** Pedestrian paths only. */
+  accessible?: string;
+  shaded?: string;
+  /** Bike paths only. */
+  path_class?: string;
+  stage?: string;
 }
 
-export interface NetParkingLotProps {
+export interface NetParkingProps extends CommonProps, AreaProps {
   parking_id: string;
-  name_ar: string;
-  name_en: string;
-  type: 'Faculty' | 'Student' | 'VIP' | 'Visitor' | 'Accessible' | 'Mixed';
-  capacity: number;
-  occupied?: number;
-  ev_charging: boolean;
-  ev_charging_count: number;
-  floors: number;
-  covered: boolean;
-  hourly_rate_sar?: number;
+  parking_no?: string;
+  name_ar?: string;
+  name_en?: string;
+  owner_ar?: string;
+  owner_en?: string;
+  capacity?: number;
+  height_m?: number;
+  subtype?: number;
 }
 
-export interface NetTransitStopProps {
-  stop_id: string;
-  name_ar: string;
-  name_en: string;
-  lines: string[];
-  shelter: boolean;
-  real_time_display: boolean;
-  accessible: boolean;
+export interface NetSidewalkProps extends CommonProps, AreaProps {
+  sidewalk_id: string;
+  /** Mixed English/Arabic in the source: 'Asphalt', 'اسمنت', 'بلاط', 'كونكريت'. */
+  surface_type?: string;
+  status?: string;
 }
 
-export interface UtlLightingProps {
+export interface NetRoadIslandProps extends CommonProps, AreaProps {
+  island_id: string;
+}
+
+export interface NetRoadSignProps extends CommonProps {
+  sign_id: string;
+}
+
+// ── utl ──────────────────────────────────────────────────────────────────────
+
+export interface UtlLightingProps extends CommonProps {
   pole_id: string;
-  type: 'Street' | 'Pathway' | 'Flood' | 'Decorative' | 'Solar';
-  height_m: number;
-  wattage: number;
-  status: 'Operational' | 'Faulty' | 'Maintenance';
-  last_maintenance: string;
+  name_ar?: string;
+  name_en?: string;
+  subtype?: number;
+  light_type?: string;
+  status?: string;
+  lamp_technology?: string;
+  pole_height_m?: number;
+  power_watts?: number;
 }
 
-export interface UtlSecurityNodeProps {
+export interface UtlWaterLineProps extends PipeProps {
+  name_ar?: string;
+  name_en?: string;
+  depth_m?: number;
+}
+
+export type UtlSewerLineProps = PipeProps;
+export type UtlIrrigationLineProps = PipeProps;
+
+export interface UtlChilledWaterLineProps extends PipeProps {
+  /** Arabic in the source: بارد = chilled, حار / ساخن = hot. */
+  network_type?: string;
+}
+
+export interface UtlElectricCableProps extends CommonProps, LengthProps {
+  cable_id: string;
+  subtype?: number;
+  status?: string;
+}
+
+export interface UtlTelecomDuctProps extends CommonProps, LengthProps {
+  duct_id: string;
+  duct_type?: string;
+  status?: string;
+}
+
+export interface UtlFireHydrantProps extends CommonProps {
+  hydrant_id: string;
+  /** 'Wet Barrel' | 'Dry Barrel' | 'Pillar'. */
+  hydrant_type?: string;
+  status?: string;
+}
+
+export interface UtlSecurityNodeProps extends CommonProps {
   node_id: string;
-  type: 'CCTV' | 'Emergency Phone' | 'Access Control' | 'Gate Barrier';
-  coverage_angle?: number;
+  camera_id?: string;
+  name_ar?: string;
+  name_en?: string;
+  node_type?: string;
+  status?: string;
+  brand?: string;
+  model?: string;
   resolution?: string;
-  recording: boolean;
-  status: 'Active' | 'Inactive' | 'Maintenance';
+  range_m?: number;
 }
 
-export interface UtlWaterLineProps {
-  line_id: string;
-  network_type: 'Potable' | 'Irrigation' | 'Fire Protection' | 'Chilled Water' | 'Sewage';
-  diameter_mm: number;
-  material: 'HDPE' | 'Ductile Iron' | 'PVC' | 'Steel';
-  flow_direction?: 'Forward' | 'Reverse';
-  status: 'Active' | 'Isolated' | 'Under Repair';
-  length_m: number;
-}
+// ── env ──────────────────────────────────────────────────────────────────────
 
-export interface EnvGreenAreaProps {
+export interface EnvGreenAreaProps extends CommonProps, AreaProps {
   green_id: string;
-  name_ar: string;
-  name_en: string;
-  type: 'Park' | 'Garden' | 'Sports Field' | 'Plaza' | 'Courtyard' | 'Green Roof' | 'Buffer Zone';
-  area_sqm: number;
-  irrigation: 'Automated' | 'Manual' | 'None';
-  native_species_pct: number;
-  maintenance_level: 'High' | 'Medium' | 'Low';
 }
 
-export interface EnvContourProps {
-  contour_id: string;
-  elevation_m: number;
-  index_contour: boolean;
-  length_m: number;
+export interface EnvTreeProps extends CommonProps {
+  tree_id: string;
+  subtype?: number;
+  /** 'Shade', 'Phoenix Dactylifera Palm', 'Tabebuia Tree', … */
+  species?: string;
 }
 
-export type SoakawayType =
-  | 'Infiltration Basin'
-  | 'Swale'
-  | 'Retention Pond'
-  | 'Permeable Pavement'
-  | 'French Drain'
-  | 'Detention Tank';
+export type EnvDrainageLineProps = PipeProps;
 
-export interface EnvSoakawayProps {
-  soakaway_id: string;
-  name_ar: string;
-  name_en: string;
-  type: SoakawayType;
-  area_sqm: number;
-  capacity_m3: number;
-  depth_m: number;
-  infiltration_rate_mmh: number;
-  catchment_area_sqm: number;
-  status: 'Operational' | 'Silted' | 'Maintenance' | 'Planned';
+export interface EnvCatchBasinProps extends CommonProps {
+  basin_id: string;
+  name_ar?: string;
+  name_en?: string;
+  subtype?: number;
+  basin_type?: string;
+  status?: string;
+  depth_m?: number;
+  invert_level_m?: number;
 }
 
-export type AdmFeature =
-  | BaseFeature<'Polygon' | 'MultiPolygon', AdmCampusBoundaryProps>
-  | BaseFeature<'Polygon' | 'MultiPolygon', AdmZoneProps>
-  | BaseFeature<'Polygon' | 'MultiPolygon', AdmParcelProps>;
-
-export type BldFeature =
-  | BaseFeature<'Polygon' | 'MultiPolygon', BldFootprintProps>
-  | BaseFeature<'Point', BldEntranceProps>
-  | BaseFeature<'Point', BldAmenityProps>;
-
-export type NetFeature =
-  | BaseFeature<'LineString' | 'MultiLineString', NetRoadProps>
-  | BaseFeature<'LineString' | 'MultiLineString', NetPedestrianPathProps>
-  | BaseFeature<'Polygon' | 'MultiPolygon', NetParkingLotProps>
-  | BaseFeature<'Point', NetTransitStopProps>;
-
-export type UtlFeature =
-  | BaseFeature<'Point', UtlLightingProps>
-  | BaseFeature<'Point', UtlSecurityNodeProps>
-  | BaseFeature<'LineString' | 'MultiLineString', UtlWaterLineProps>;
-
-export type EnvFeature =
-  | BaseFeature<'Polygon' | 'MultiPolygon', EnvGreenAreaProps>
-  | BaseFeature<'Polygon' | 'MultiPolygon', EnvSoakawayProps>
-  | BaseFeature<'LineString' | 'MultiLineString', EnvContourProps>;
-
-export type KauFeature = AdmFeature | BldFeature | NetFeature | UtlFeature | EnvFeature;
-export type KauFeatureCollection = { type: 'FeatureCollection'; features: KauFeature[] };
-
-export type LayerGroup = 'adm' | 'bld' | 'net' | 'utl' | 'env';
+/** Registry layer id → its property schema. */
+export interface LayerPropsMap {
+  adm_campus_boundary: AdmCampusBoundaryProps;
+  adm_zones: AdmZoneProps;
+  adm_parcels: AdmParcelProps;
+  adm_investment: AdmInvestmentProps;
+  bld_footprints: BldFootprintProps;
+  bld_rooms: BldRoomProps;
+  bld_gates: BldGateProps;
+  bld_landmarks: BldLandmarkProps;
+  net_roads: NetRoadProps;
+  net_walking_paths: NetPathProps;
+  net_bike_paths: NetPathProps;
+  net_parking_lots: NetParkingProps;
+  net_sidewalks: NetSidewalkProps;
+  net_road_islands: NetRoadIslandProps;
+  net_road_signs: NetRoadSignProps;
+  utl_lighting: UtlLightingProps;
+  utl_water_lines: UtlWaterLineProps;
+  utl_sewer_lines: UtlSewerLineProps;
+  utl_irrigation_lines: UtlIrrigationLineProps;
+  utl_chilled_water_lines: UtlChilledWaterLineProps;
+  utl_electric_cables: UtlElectricCableProps;
+  utl_telecom_ducts: UtlTelecomDuctProps;
+  utl_fire_hydrants: UtlFireHydrantProps;
+  utl_security_nodes: UtlSecurityNodeProps;
+  env_green_areas: EnvGreenAreaProps;
+  env_trees: EnvTreeProps;
+  env_drainage_lines: EnvDrainageLineProps;
+  env_catch_basins: EnvCatchBasinProps;
+}

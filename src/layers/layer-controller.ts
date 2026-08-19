@@ -1,7 +1,7 @@
 import type { FeatureCollection } from 'geojson';
 import type { Map as MapLibreMap, MapGeoJSONFeature, MapLayerMouseEvent } from 'maplibre-gl';
 import { num } from '../core/geo';
-import { useAppStore } from '../core/store';
+import { useAppStore, type LayerState } from '../core/store';
 import {
   defaultOpacity,
   LAYER_BY_ID,
@@ -11,37 +11,88 @@ import {
 } from './layer-registry';
 import { ensureSource, sourceId } from './vector-source';
 
+let activeMap: MapLibreMap | null = null;
 let unsubscribe: (() => void) | null = null;
 
+/** Layers currently added to the live style. Reset whenever the basemap style changes. */
+const attached = new Set<string>();
+const inflight = new Map<string, Promise<void>>();
+
+/**
+ * Attach the registry to a freshly loaded style.
+ *
+ * Only the layers that are meant to be visible are fetched — the geodatabase extract is
+ * ~75 MB across 28 layers, so everything else waits until it is switched on.
+ */
 export async function loadRegistry(map: MapLibreMap): Promise<void> {
-  const current = useAppStore.getState().layers;
-  if (!current.length) {
-    useAppStore.getState().setLayers(
+  activeMap = map;
+  attached.clear();
+  inflight.clear();
+
+  const store = useAppStore.getState();
+  if (!store.layers.length) {
+    store.setLayers(
       LAYER_REGISTRY.map((l) => ({
         id: l.id,
-        visible: true,
+        visible: l.defaultVisible ?? false,
         opacity: defaultOpacity(l),
         group: l.group,
       })),
     );
   }
 
-  const collections: Partial<Record<string, FeatureCollection>> = {};
-  for (const layer of LAYER_REGISTRY) {
-    try {
-      const fc = await ensureSource(map, layer);
-      if (fc) collections[layer.id] = fc;
-      addLayer(map, layer);
-    } catch (err) {
-      console.warn(`Layer ${layer.id} skipped`, err);
-    }
-  }
+  const { layers, groups } = useAppStore.getState();
+  await Promise.all(
+    layers.filter((l) => l.visible && groups[l.group]).map((l) => ensureLoaded(l.id)),
+  );
 
-  useAppStore.getState().setCollections(collections);
-  computeMetrics(collections);
   useAppStore.getState().setDataReady(true);
   unsubscribe?.();
   unsubscribe = syncStore(map);
+}
+
+/**
+ * Fetch a layer's data and add it to the map if it isn't there yet. Safe to call
+ * repeatedly and concurrently; the in-flight promise is shared. Analytics panels use
+ * this to pull in layers the user has not switched on.
+ */
+export function ensureLoaded(layerId: string): Promise<void> {
+  const map = activeMap;
+  const def = LAYER_BY_ID[layerId];
+  if (!map || !def || attached.has(layerId)) return Promise.resolve();
+
+  const pending = inflight.get(layerId);
+  if (pending) return pending;
+
+  const promise = attach(map, def).finally(() => inflight.delete(layerId));
+  inflight.set(layerId, promise);
+  return promise;
+}
+
+async function attach(map: MapLibreMap, layer: LayerDef): Promise<void> {
+  useAppStore.getState().setLayerLoading(layer.id, true);
+  try {
+    const fc = await ensureSource(map, layer);
+    // The basemap can be swapped mid-fetch, which tears down every source and layer.
+    if (map !== activeMap) return;
+
+    addLayer(map, layer);
+    attached.add(layer.id);
+    if (fc) {
+      useAppStore.getState().setCollection(layer.id, fc);
+      computeMetrics(useAppStore.getState().collections);
+    }
+    applyLayerState(map);
+  } catch (err) {
+    console.warn(`Layer ${layer.id} skipped`, err);
+    // Mark it done with an empty collection: without this the store subscription
+    // would retry the failed fetch on every change, and charts would sit on a
+    // loading skeleton forever instead of showing their empty state.
+    attached.add(layer.id);
+    useAppStore.getState().setCollection(layer.id, { type: 'FeatureCollection', features: [] });
+  } finally {
+    useAppStore.getState().setLayerLoading(layer.id, false);
+  }
 }
 
 export function addLayer(map: MapLibreMap, layer: LayerDef): void {
@@ -73,19 +124,46 @@ export function applyLayerState(map: MapLibreMap): void {
   }
 }
 
-export function queryInteractive(map: MapLibreMap, point: MapLayerMouseEvent['point']): MapGeoJSONFeature[] {
-  const ids = LAYER_REGISTRY.filter((l) => l.interactive && map.getLayer(l.id)).map((l) => l.id);
+export function queryInteractive(
+  map: MapLibreMap,
+  point: MapLayerMouseEvent['point'],
+): MapGeoJSONFeature[] {
+  const ids = LAYER_REGISTRY.filter(
+    (l) => l.interactive && attached.has(l.id) && map.getLayer(l.id),
+  ).map((l) => l.id);
   return ids.length ? map.queryRenderedFeatures(point, { layers: ids }) : [];
 }
 
 export function detachStoreSync(): void {
   unsubscribe?.();
   unsubscribe = null;
+  activeMap = null;
+  attached.clear();
+  inflight.clear();
 }
 
 function syncStore(map: MapLibreMap): () => void {
   applyLayerState(map);
-  return useAppStore.subscribe(() => applyLayerState(map));
+
+  // `move` republishes the view on every frame; only react when the layer slices
+  // themselves are replaced, which the store does on any visibility/opacity change.
+  let lastLayers: LayerState[] | null = null;
+  let lastGroups: Record<string, boolean> | null = null;
+
+  return useAppStore.subscribe(() => {
+    if (map !== activeMap) return;
+    const { layers, groups } = useAppStore.getState();
+    if (layers === lastLayers && groups === lastGroups) return;
+    lastLayers = layers;
+    lastGroups = groups;
+
+    for (const state of layers) {
+      if (state.visible && groups[state.group] && !attached.has(state.id)) {
+        void ensureLoaded(state.id);
+      }
+    }
+    applyLayerState(map);
+  });
 }
 
 function computeMetrics(collections: Partial<Record<string, FeatureCollection>>): void {

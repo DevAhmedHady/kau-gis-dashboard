@@ -44,6 +44,8 @@ interface AppState {
   groups: Record<LayerGroup, boolean>;
   metrics: MetricsState;
   collections: Partial<Record<string, FeatureCollection>>;
+  /** Layer ids currently being fetched — layers load lazily on first becoming visible. */
+  loadingLayers: string[];
   dataReady: boolean;
   extent: BBox | null;
   mapView: MapViewState | null;
@@ -65,6 +67,8 @@ interface AppState {
   toggleGroup: (group: LayerGroup) => void;
   setMetrics: (metrics: Partial<MetricsState>) => void;
   setCollections: (collections: Partial<Record<string, FeatureCollection>>) => void;
+  setCollection: (id: string, collection: FeatureCollection) => void;
+  setLayerLoading: (id: string, loading: boolean) => void;
   setDataReady: (ready: boolean) => void;
   setExtent: (extent: BBox | null) => void;
   setMapView: (view: MapViewState) => void;
@@ -119,6 +123,7 @@ export const useAppStore = create<AppState>((set) => ({
   groups: GROUPS,
   metrics: { buildingCount: 0, totalArea: 0, parkingCapacity: 0, greenArea: 0 },
   collections: {},
+  loadingLayers: [],
   dataReady: false,
   extent: null,
   mapView: null,
@@ -149,6 +154,16 @@ export const useAppStore = create<AppState>((set) => ({
     }),
   setMetrics: (metrics) => set((s) => ({ metrics: { ...s.metrics, ...metrics } })),
   setCollections: (collections) => set({ collections }),
+  setCollection: (id, collection) =>
+    set((s) => ({ collections: { ...s.collections, [id]: collection } })),
+  setLayerLoading: (id, loading) =>
+    set((s) => ({
+      loadingLayers: loading
+        ? s.loadingLayers.includes(id)
+          ? s.loadingLayers
+          : [...s.loadingLayers, id]
+        : s.loadingLayers.filter((l) => l !== id),
+    })),
   setDataReady: (dataReady) => set({ dataReady }),
   setExtent: (extent) => set({ extent }),
   setMapView: (mapView) => set({ mapView }),

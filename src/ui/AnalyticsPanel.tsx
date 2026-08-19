@@ -5,12 +5,12 @@ import BuildingAreaChart from './BuildingAreaChart';
 import GreenAreaChart from './GreenAreaChart';
 import { IconX } from './icons';
 import NetworkLengthChart from './NetworkLengthChart';
-import SoakawayChart from './SoakawayChart';
+import RoomsChart from './RoomsChart';
 
 const TABS = [
   { id: 'buildings', en: 'Buildings', ar: 'المباني' },
+  { id: 'rooms', en: 'Rooms', ar: 'الغرف' },
   { id: 'green', en: 'Green', ar: 'خضراء' },
-  { id: 'soakaways', en: 'Soakaways', ar: 'تصريف' },
   { id: 'networks', en: 'Networks', ar: 'شبكات' },
 ] as const;
 
@@ -73,8 +73,8 @@ export default function AnalyticsPanel() {
                 transition={{ duration: 0.18 }}
               >
                 {tab === 'buildings' && <BuildingAreaChart />}
+                {tab === 'rooms' && <RoomsChart />}
                 {tab === 'green' && <GreenAreaChart />}
-                {tab === 'soakaways' && <SoakawayChart />}
                 {tab === 'networks' && <NetworkLengthChart />}
               </motion.div>
             </AnimatePresence>

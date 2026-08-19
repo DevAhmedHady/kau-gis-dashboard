@@ -1,7 +1,8 @@
 import type { Feature, Geometry, Position } from 'geojson';
 
-export const KAU_CENTER: [number, number] = [39.16, 21.49];
-export const KAU_ZOOM = 15.5;
+/** Main Sulaymaniyah campus, Jeddah -- where the geodatabase's detailed data sits. */
+export const KAU_CENTER: [number, number] = [39.2463, 21.493];
+export const KAU_ZOOM = 15;
 
 /** west, south, east, north */
 export type BBox = [number, number, number, number];

@@ -1,23 +1,28 @@
 import { useMemo, useState } from 'react';
-import { featuresInView, groupSum, propNum } from '../core/analytics';
+import { featuresInView, groupSumTop, propNum } from '../core/analytics';
 import { useAppStore } from '../core/store';
-import { CategoricalChart, ChartCard, Segmented } from './chart-kit';
+import { CategoricalChart, ChartCard, Segmented, useLayerData } from './chart-kit';
 
-type GroupBy = 'faculty' | 'usage_type';
+type GroupBy = 'category' | 'status' | 'branch';
+
+const LAYERS = ['bld_footprints'];
 
 export default function BuildingAreaChart() {
   const locale = useAppStore((s) => s.locale);
   const collections = useAppStore((s) => s.collections);
   const extent = useAppStore((s) => s.extent);
-  const loading = !useAppStore((s) => s.dataReady);
-  const [groupBy, setGroupBy] = useState<GroupBy>('faculty');
+  const loading = useLayerData(LAYERS);
+  const [groupBy, setGroupBy] = useState<GroupBy>('category');
+  const ar = locale === 'ar';
 
   const features = useMemo(
     () => featuresInView(collections, 'bld_footprints', extent),
     [collections, extent],
   );
-  const metric = useMemo(() => groupSum(features, groupBy, propNum('gross_area_sqm')), [features, groupBy]);
-  const ar = locale === 'ar';
+  const metric = useMemo(
+    () => groupSumTop(features, groupBy, propNum('area_sqm'), 10, ar ? 'أخرى' : 'Other'),
+    [features, groupBy, ar],
+  );
 
   return (
     <ChartCard
@@ -31,8 +36,9 @@ export default function BuildingAreaChart() {
           value={groupBy}
           onChange={setGroupBy}
           options={[
-            { id: 'faculty', label: ar ? 'الكلية' : 'Faculty' },
-            { id: 'usage_type', label: ar ? 'الاستخدام' : 'Usage' },
+            { id: 'category', label: ar ? 'التصنيف' : 'Category' },
+            { id: 'status', label: ar ? 'الحالة' : 'Status' },
+            { id: 'branch', label: ar ? 'الفرع' : 'Branch' },
           ]}
         />
       }

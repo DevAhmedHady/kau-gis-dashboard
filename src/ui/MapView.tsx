@@ -97,7 +97,8 @@ export default function MapView() {
     const def = BASEMAPS.find((b) => b.id === basemap);
     if (!def) return;
     appliedBasemap.current = basemap;
-    clearSourceCache();
+    // Parsed features are style-independent: keep the cache so re-attaching layers
+    // after `style.load` costs nothing.
     map.setStyle(def.style);
   }, [basemap]);
 

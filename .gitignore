@@ -5,3 +5,8 @@ dist
 .env
 .env.*
 !*.env.example
+
+# Source geodatabase (~160 MB, over GitHub's file limit).
+# Re-extract public/data with: python scripts/extract_gdb.py
+*.gdb.zip
+*.gdb/

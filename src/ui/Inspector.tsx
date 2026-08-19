@@ -6,9 +6,9 @@ import { IconCheck, IconCopy, IconX } from './icons';
 
 type Group = { title: string; entries: [string, unknown][] };
 
-const IDENTITY = /(_id$|^id$|name_|title|sector_name)/i;
-const SPATIAL = /(area|length|capacity|floor|depth|width|height|elevation|sqm|occupied)/i;
-const STATUS = /(status|type|usage|faculty|hierarchy|land_use|zone_type|access|network)/i;
+const IDENTITY = /(_id$|^id$|_no$|name_|title)/i;
+const SPATIAL = /(area|length|capacity|floor|depth|width|height|elevation|sqm|diameter|invert|range)/i;
+const STATUS = /(status|type|usage|category|class|material|species|land_use|access|network|branch|tenure|ownership|contract|lamp|surface|shaded|accessible)/i;
 
 function groupProperties(props: Record<string, unknown>, ar: boolean): Group[] {
   const identity: [string, unknown][] = [];
@@ -41,10 +41,9 @@ export default function Inspector() {
   const title = String(
     props.name_en ??
       props.name_ar ??
-      props.sector_name_en ??
-      props.building_id ??
-      props.parking_id ??
-      props.soakaway_id ??
+      props.description ??
+      props.building_no ??
+      props.parking_no ??
       (ar ? 'تفاصيل المعلم' : 'Feature Details'),
   );
   const groups = useMemo(() => groupProperties(props, ar), [props, ar]);

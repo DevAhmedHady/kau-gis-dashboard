@@ -1,4 +1,4 @@
-import { type ReactNode, useMemo } from 'react';
+import { type ReactNode, useEffect, useMemo } from 'react';
 import {
   ArcElement,
   BarElement,
@@ -7,6 +7,7 @@ import {
   Legend,
   LinearScale,
   Tooltip,
+  type AnimationSpec,
   type ChartData,
   type ChartOptions,
   type ScriptableContext,
@@ -14,12 +15,18 @@ import {
 import { Bar, Pie } from 'react-chartjs-2';
 import type { GroupedMetric } from '../core/analytics';
 import { useAppStore } from '../core/store';
+import { ensureLoaded } from '../layers/layer-controller';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend);
 
 ChartJS.defaults.font.family = "'Plus Jakarta Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif";
 ChartJS.defaults.font.size = 11;
-ChartJS.defaults.animation = { duration: 700, easing: 'easeOutQuart' };
+// Assign the fields, don't replace the object: Chart.js hangs resolver metadata off
+// defaults.animation, and overwriting it makes Animation.tick throw on destroy.
+// The declared type allows `false`, which the defaults never are.
+const animationDefaults = ChartJS.defaults.animation as AnimationSpec<'bar'>;
+animationDefaults.duration = 700;
+animationDefaults.easing = 'easeOutQuart';
 ChartJS.defaults.elements.bar.borderRadius = 8;
 ChartJS.defaults.elements.bar.borderSkipped = false;
 ChartJS.defaults.plugins.legend.labels.usePointStyle = true;
@@ -42,8 +49,26 @@ export const PALETTE = [
 ];
 
 export const GREEN_PALETTE = ['#10b981', '#14b8a6', '#06b6d4', '#84cc16', '#f59e0b', '#8b5cf6', '#3b82f6'];
-export const SOAK_PALETTE = ['#06b6d4', '#3b82f6', '#8b5cf6', '#14b8a6', '#f59e0b', '#64748b'];
-export const NET_PALETTE = ['#64748b', '#f59e0b', '#06b6d4', '#8b5cf6'];
+export const COOL_PALETTE = ['#06b6d4', '#3b82f6', '#8b5cf6', '#14b8a6', '#f59e0b', '#64748b'];
+export const NET_PALETTE = [
+  '#0f172a', '#0ea5e9', '#a16207', '#10b981', '#06b6d4', '#eab308', '#8b5cf6', '#3b82f6',
+];
+
+/**
+ * Charts can reference layers the user has not switched on, so they pull the data in
+ * themselves. Returns true while any of the layers is still missing or in flight.
+ */
+export function useLayerData(ids: readonly string[]): boolean {
+  const key = ids.join(',');
+  const loadingLayers = useAppStore((s) => s.loadingLayers);
+  const collections = useAppStore((s) => s.collections);
+
+  useEffect(() => {
+    for (const id of key.split(',')) void ensureLoaded(id);
+  }, [key]);
+
+  return ids.some((id) => loadingLayers.includes(id) || !collections[id]);
+}
 
 function cssVar(name: string, fallback: string): string {
   if (typeof document === 'undefined') return fallback;
