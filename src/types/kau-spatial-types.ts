@@ -7,7 +7,7 @@
  * one of its null sentinels ('-1', ''), so features carry only what is actually populated.
  */
 
-export type LayerGroup = 'adm' | 'bld' | 'net' | 'utl' | 'env';
+export type LayerGroup = 'adm' | 'bld' | 'plan' | 'net' | 'utl' | 'env';
 
 /** Attribution present on nearly every layer. `branch` names the KAU campus/branch. */
 export interface CommonProps {
@@ -99,10 +99,32 @@ export interface BldRoomProps extends AreaProps {
   floor_no?: number;
   floor_name?: string;
   room_no?: string;
-  capacity?: number;
+  /** Furniture / occupancy notes in the GDB — often a string, not a seat count. */
+  capacity?: string | number;
   student_capacity?: number;
+  /** Coded domain stored as the code (labels are not in the GDB). */
   classification?: string;
   usage_ar?: string;
+}
+
+export interface PlanDoorProps extends CommonProps, LengthProps {
+  door_id: string;
+  building_id?: string;
+  building_no?: string;
+  floor_no?: number;
+  floor_name?: string;
+  room_id?: string;
+  status?: string;
+}
+
+export interface PlanWallProps extends CommonProps, LengthProps, AreaProps {
+  wall_id: string;
+  building_id?: string;
+  building_no?: string;
+  floor_no?: number;
+  floor_name?: string;
+  material?: string;
+  status?: string;
 }
 
 export interface BldGateProps extends CommonProps {
@@ -264,6 +286,8 @@ export interface LayerPropsMap {
   adm_investment: AdmInvestmentProps;
   bld_footprints: BldFootprintProps;
   bld_rooms: BldRoomProps;
+  plan_doors: PlanDoorProps;
+  plan_walls: PlanWallProps;
   bld_gates: BldGateProps;
   bld_landmarks: BldLandmarkProps;
   net_roads: NetRoadProps;

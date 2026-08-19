@@ -190,9 +190,35 @@ export function IconKbd(p: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function IconFilter(p: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="14" height="14" {...base} {...p}>
+      <polygon points="4 5 20 5 13 13 13 19 11 20 11 13 4 5" />
+    </svg>
+  );
+}
+export function IconLocate(p: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="14" height="14" {...base} {...p}>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 3v2M12 19v2M3 12h2M19 12h2" />
+      <circle cx="12" cy="12" r="8" />
+    </svg>
+  );
+}
+export function IconPlan(p: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="18" height="18" {...base} {...p}>
+      <rect x="4" y="4" width="16" height="16" rx="2" />
+      <path d="M4 10h16M4 16h16M10 4v16" />
+    </svg>
+  );
+}
+
 export const GROUP_ICONS = {
   adm: IconMap,
   bld: IconBuilding,
+  plan: IconPlan,
   net: IconRoad,
   utl: IconZap,
   env: IconLeaf,

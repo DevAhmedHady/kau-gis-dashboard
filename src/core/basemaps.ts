@@ -4,6 +4,7 @@ const MAPTILER = import.meta.env.VITE_MAPTILER_KEY;
 
 const SATELLITE: StyleSpecification = {
   version: 8,
+  glyphs: 'https://tiles.basemaps.cartocdn.com/fonts/{fontstack}/{range}.pbf',
   sources: {
     esri: {
       type: 'raster',

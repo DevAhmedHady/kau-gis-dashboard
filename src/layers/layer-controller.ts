@@ -1,7 +1,8 @@
 import type { FeatureCollection } from 'geojson';
-import type { Map as MapLibreMap, MapGeoJSONFeature, MapLayerMouseEvent } from 'maplibre-gl';
+import type { FilterSpecification, Map as MapLibreMap, MapGeoJSONFeature, MapLayerMouseEvent } from 'maplibre-gl';
+import { combineFilters, labelLayerId, toDefinitionFilter } from '../core/definition-query';
 import { num } from '../core/geo';
-import { useAppStore, type LayerState } from '../core/store';
+import { useAppStore, type LayerFilter, type LayerState } from '../core/store';
 import {
   defaultOpacity,
   LAYER_BY_ID,
@@ -17,6 +18,8 @@ let unsubscribe: (() => void) | null = null;
 /** Layers currently added to the live style. Reset whenever the basemap style changes. */
 const attached = new Set<string>();
 const inflight = new Map<string, Promise<void>>();
+
+const LABEL_FONT = ['Open Sans Regular', 'Noto Sans Regular'];
 
 /**
  * Attach the registry to a freshly loaded style.
@@ -96,20 +99,58 @@ async function attach(map: MapLibreMap, layer: LayerDef): Promise<void> {
 }
 
 export function addLayer(map: MapLibreMap, layer: LayerDef): void {
-  if (map.getLayer(layer.id)) return;
+  if (!map.getLayer(layer.id)) {
+    map.addLayer({
+      id: layer.id,
+      type: layer.geometryType,
+      source: sourceId(layer),
+      ...(layer.source.type === 'pmtiles'
+        ? { 'source-layer': layer.source.sourceLayer ?? layer.id }
+        : {}),
+      paint: layer.paint,
+      ...(layer.layout ? { layout: layer.layout } : {}),
+      ...(layer.filter ? { filter: layer.filter } : {}),
+      ...(layer.minzoom != null ? { minzoom: layer.minzoom } : {}),
+      ...(layer.maxzoom != null ? { maxzoom: layer.maxzoom } : {}),
+    } as Parameters<MapLibreMap['addLayer']>[0]);
+  }
+  addLabelLayer(map, layer);
+}
+
+function addLabelLayer(map: MapLibreMap, layer: LayerDef): void {
+  const field = layer.metadata.labelField;
+  if (!field) return;
+  const id = labelLayerId(layer.id);
+  if (map.getLayer(id)) return;
   map.addLayer({
-    id: layer.id,
-    type: layer.geometryType,
+    id,
+    type: 'symbol',
     source: sourceId(layer),
-    ...(layer.source.type === 'pmtiles'
-      ? { 'source-layer': layer.source.sourceLayer ?? layer.id }
-      : {}),
-    paint: layer.paint,
-    ...(layer.layout ? { layout: layer.layout } : {}),
-    ...(layer.filter ? { filter: layer.filter } : {}),
-    ...(layer.minzoom != null ? { minzoom: layer.minzoom } : {}),
-    ...(layer.maxzoom != null ? { maxzoom: layer.maxzoom } : {}),
-  } as Parameters<MapLibreMap['addLayer']>[0]);
+    minzoom: Math.max(layer.minzoom ?? 0, 15),
+    filter: ['has', field],
+    layout: {
+      'text-field': ['to-string', ['get', field]],
+      'text-font': LABEL_FONT,
+      'text-size': ['interpolate', ['linear'], ['zoom'], 15, 10, 18, 14, 20, 16],
+      'text-anchor': 'center',
+      'text-allow-overlap': false,
+      'text-ignore-placement': false,
+      'text-padding': 2,
+      'text-max-width': 8,
+      'text-optional': true,
+    },
+    paint: {
+      'text-color': '#f8fafc',
+      'text-halo-color': '#0f172a',
+      'text-halo-width': 1.4,
+      'text-halo-blur': 0.4,
+    },
+  });
+}
+
+function layerFilterSpec(layerId: string, base: FilterSpecification | undefined): FilterSpecification | null {
+  const user = toDefinitionFilter(useAppStore.getState().filters[layerId]);
+  return combineFilters(base, user);
 }
 
 export function applyLayerState(map: MapLibreMap): void {
@@ -121,6 +162,17 @@ export function applyLayerState(map: MapLibreMap): void {
     map.setLayoutProperty(state.id, 'visibility', visible ? 'visible' : 'none');
     if (!def) continue;
     map.setPaintProperty(state.id, opacityPaintKey(def.geometryType), state.opacity);
+    map.setFilter(state.id, layerFilterSpec(state.id, def.filter));
+
+    const labels = labelLayerId(state.id);
+    if (!map.getLayer(labels)) continue;
+    map.setLayoutProperty(labels, 'visibility', visible ? 'visible' : 'none');
+    map.setPaintProperty(labels, 'text-opacity', state.opacity);
+    const labelBase: FilterSpecification | undefined = def.metadata.labelField
+      ? (['has', def.metadata.labelField] as FilterSpecification)
+      : undefined;
+    const labelFilter = combineFilters(labelBase, toDefinitionFilter(useAppStore.getState().filters[state.id]));
+    map.setFilter(labels, labelFilter);
   }
 }
 
@@ -149,13 +201,15 @@ function syncStore(map: MapLibreMap): () => void {
   // themselves are replaced, which the store does on any visibility/opacity change.
   let lastLayers: LayerState[] | null = null;
   let lastGroups: Record<string, boolean> | null = null;
+  let lastFilters: Record<string, LayerFilter> | null = null;
 
   return useAppStore.subscribe(() => {
     if (map !== activeMap) return;
-    const { layers, groups } = useAppStore.getState();
-    if (layers === lastLayers && groups === lastGroups) return;
+    const { layers, groups, filters } = useAppStore.getState();
+    if (layers === lastLayers && groups === lastGroups && filters === lastFilters) return;
     lastLayers = layers;
     lastGroups = groups;
+    lastFilters = filters;
 
     for (const state of layers) {
       if (state.visible && groups[state.group] && !attached.has(state.id)) {

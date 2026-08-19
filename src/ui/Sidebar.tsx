@@ -1,12 +1,27 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useMemo, useState } from 'react';
+import { collectionBBox } from '../core/geo';
+import { featureMatchesFilter } from '../core/fields';
 import { useAppStore } from '../core/store';
 import { GROUP_META, LAYER_REGISTRY } from '../layers/layer-registry';
+import { ensureLoaded } from '../layers/layer-controller';
 import type { LayerGroup } from '../types/kau-spatial-types';
-import { GROUP_ICONS, IconChart, IconChevron, IconEye, IconEyeOff, IconGrip, IconPanel, IconSearch } from './icons';
+import {
+  GROUP_ICONS,
+  IconChart,
+  IconChevron,
+  IconEye,
+  IconEyeOff,
+  IconFilter,
+  IconGrip,
+  IconLocate,
+  IconPanel,
+  IconSearch,
+} from './icons';
+import LayerFilterPanel from './LayerFilter';
 import Metrics from './Metrics';
 
-const GROUPS: LayerGroup[] = ['adm', 'bld', 'net', 'utl', 'env'];
+const GROUPS: LayerGroup[] = ['adm', 'bld', 'plan', 'net', 'utl', 'env'];
 
 const railStagger = {
   hidden: {},
@@ -21,11 +36,23 @@ export default function Sidebar() {
   const locale = useAppStore((s) => s.locale);
   const layers = useAppStore((s) => s.layers);
   const groups = useAppStore((s) => s.groups);
+  const filters = useAppStore((s) => s.filters);
   const analyticsOpen = useAppStore((s) => s.analyticsOpen);
   const collapsed = useAppStore((s) => s.sidebarCollapsed);
   const [folded, setFolded] = useState<Record<string, boolean>>({});
+  const [filterLayer, setFilterLayer] = useState<string | null>(null);
   const byId = useMemo(() => Object.fromEntries(layers.map((l) => [l.id, l])), [layers]);
   const ar = locale === 'ar';
+  const filterCount = Object.keys(filters).length;
+
+  async function zoomToLayer(layerId: string): Promise<void> {
+    await ensureLoaded(layerId);
+    const store = useAppStore.getState();
+    const bbox = collectionBBox(store.collections[layerId], (f) =>
+      featureMatchesFilter(f, store.filters[layerId]),
+    );
+    if (bbox) store.requestFitBounds(bbox);
+  }
 
   return (
     <motion.aside
@@ -107,13 +134,26 @@ export default function Sidebar() {
               {ar ? 'التحليلات المكانية' : 'Spatial Analytics'}
             </button>
 
+            {filterCount > 0 && (
+              <button
+                type="button"
+                className="btn filter-clear-all"
+                onClick={() => {
+                  useAppStore.getState().clearAllFilters();
+                  setFilterLayer(null);
+                }}
+              >
+                {ar ? `مسح كل عوامل التصفية (${filterCount})` : `Clear all filters (${filterCount})`}
+              </button>
+            )}
+
             <div id="layerTree">
               {GROUPS.map((group) => {
                 const items = LAYER_REGISTRY.filter((l) => l.group === group);
                 if (!items.length) return null;
                 const isFolded = folded[group];
                 const Icon = GROUP_ICONS[group];
-                const visibleCount = items.filter((l) => byId[l.id]?.visible !== false).length;
+                const visibleCount = items.filter((l) => byId[l.id]?.visible).length;
                 return (
                   <section key={group} className="sidebar__section group">
                     <button
@@ -158,43 +198,73 @@ export default function Sidebar() {
                         >
                           {items.map((layer) => {
                             const state = byId[layer.id];
-                            const visible = state?.visible ?? true;
+                            const visible = state?.visible ?? false;
                             const opacity = state?.opacity ?? 1;
+                            const activeFilter = filters[layer.id];
+                            const filterOpen = filterLayer === layer.id;
                             return (
-                              <div key={layer.id} className="layer" draggable={false}>
-                                <span className="layer__grip" aria-hidden>
-                                  <IconGrip />
-                                </span>
-                                <button
-                                  type="button"
-                                  className={`layer__eye${visible ? '' : ' off'}`}
-                                  aria-pressed={visible}
-                                  aria-label={`${layer.title[locale]} ${visible ? 'visible' : 'hidden'}`}
-                                  onClick={() => useAppStore.getState().setLayerVisible(layer.id, !visible)}
-                                >
-                                  {visible ? <IconEye /> : <IconEyeOff />}
-                                </button>
-                                <div className="layer__info">
-                                  <div className="layer__name">{layer.title[locale]}</div>
-                                  <div className="layer__meta">
-                                    {layer.geometryType} · {layer.source.type.toUpperCase()}
+                              <div key={layer.id} className={`layer${activeFilter ? ' filtered' : ''}`} draggable={false}>
+                                <div className="layer__row">
+                                  <span className="layer__grip" aria-hidden>
+                                    <IconGrip />
+                                  </span>
+                                  <button
+                                    type="button"
+                                    className={`layer__eye${visible ? '' : ' off'}`}
+                                    aria-pressed={visible}
+                                    aria-label={`${layer.title[locale]} ${visible ? 'visible' : 'hidden'}`}
+                                    onClick={() => useAppStore.getState().setLayerVisible(layer.id, !visible)}
+                                  >
+                                    {visible ? <IconEye /> : <IconEyeOff />}
+                                  </button>
+                                  <div className="layer__info">
+                                    <div className="layer__name">
+                                      {layer.title[locale]}
+                                      {activeFilter && (
+                                        <span className="layer__filter-dot" title={ar ? 'عامل تصفية نشط' : 'Filter active'} />
+                                      )}
+                                    </div>
+                                    <div className="layer__meta">
+                                      {activeFilter
+                                        ? `${activeFilter.field} IN (${activeFilter.values.length})`
+                                        : `${layer.geometryType} · ${layer.source.type.toUpperCase()}`}
+                                    </div>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    className={`layer__tool${filterOpen || activeFilter ? ' active' : ''}`}
+                                    aria-label={ar ? 'تصفية الطبقة' : 'Filter layer'}
+                                    title={ar ? 'تصفية' : 'Filter'}
+                                    onClick={() => setFilterLayer(filterOpen ? null : layer.id)}
+                                  >
+                                    <IconFilter />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="layer__tool"
+                                    aria-label={ar ? 'تكبير للطبقة' : 'Zoom to layer'}
+                                    title={ar ? 'تكبير للطبقة' : 'Zoom to layer'}
+                                    onClick={() => void zoomToLayer(layer.id)}
+                                  >
+                                    <IconLocate />
+                                  </button>
+                                  <div className="layer__opacity">
+                                    <input
+                                      type="range"
+                                      min={0}
+                                      max={1}
+                                      step={0.05}
+                                      value={opacity}
+                                      disabled={!visible}
+                                      onChange={(e) =>
+                                        useAppStore.getState().setOpacity(layer.id, Number(e.target.value))
+                                      }
+                                      aria-label={`${layer.title[locale]} opacity`}
+                                    />
+                                    <span className="layer__pct">{Math.round(opacity * 100)}</span>
                                   </div>
                                 </div>
-                                <div className="layer__opacity">
-                                  <input
-                                    type="range"
-                                    min={0}
-                                    max={1}
-                                    step={0.05}
-                                    value={opacity}
-                                    disabled={!visible}
-                                    onChange={(e) =>
-                                      useAppStore.getState().setOpacity(layer.id, Number(e.target.value))
-                                    }
-                                    aria-label={`${layer.title[locale]} opacity`}
-                                  />
-                                  <span className="layer__pct">{Math.round(opacity * 100)}</span>
-                                </div>
+                                {filterOpen && <LayerFilterPanel layerId={layer.id} ar={ar} />}
                               </div>
                             );
                           })}

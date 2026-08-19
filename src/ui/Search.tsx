@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import FlexSearch from 'flexsearch';
 import type { Feature } from 'geojson';
 import { featureCenter } from '../core/geo';
+import { inspectFields } from '../core/fields';
 import { useAppStore, type SearchHit } from '../core/store';
 import { LAYER_BY_ID } from '../layers/layer-registry';
 import { IconSearch } from './icons';
@@ -40,8 +41,14 @@ export default function Search() {
     if (!idx) return;
     for (const [layerId, fc] of Object.entries(collections)) {
       if (!fc || indexed.current.has(layerId)) continue;
-      const fields = LAYER_BY_ID[layerId]?.metadata.searchableFields;
-      if (!fields?.length) continue;
+      const declared = LAYER_BY_ID[layerId]?.metadata.searchableFields;
+      const fields =
+        declared?.length
+          ? declared
+          : inspectFields(fc)
+              .filter((f) => f.type === 'text' || f.type === 'coded')
+              .map((f) => f.name);
+      if (!fields.length) continue;
       indexed.current.add(layerId);
       fc.features.slice(0, MAX_DOCS_PER_LAYER).forEach((f, i) => addDoc(idx, layerId, f, i, fields));
     }

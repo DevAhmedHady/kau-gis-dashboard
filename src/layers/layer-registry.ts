@@ -33,12 +33,15 @@ export interface LayerDef {
     searchableFields?: string[];
     popupTemplate?: (props: Record<string, unknown>) => string;
     metrics?: string[];
+    /** Property used for scale-dependent labels. Must exist on the layer's schema. */
+    labelField?: string;
   };
 }
 
 export const GROUP_META: Record<LayerGroup, { ar: string; en: string }> = {
   adm: { ar: 'الحدود الإدارية', en: 'Administrative' },
   bld: { ar: 'البيئة المبنية', en: 'Built Environment' },
+  plan: { ar: 'المخططات الداخلية', en: 'Floor Plans' },
   net: { ar: 'النقل والحركة', en: 'Transportation' },
   utl: { ar: 'المرافق', en: 'Utilities' },
   env: { ar: 'البيئة', en: 'Environment' },
@@ -181,15 +184,14 @@ export const LAYER_REGISTRY: LayerDef[] = [
     defaultVisible: true,
     metadata: {
       searchableFields: ['building_id', 'building_no', 'name_ar', 'name_en', 'category', 'branch'],
-      popupTemplate: (p) =>
-        `<strong>${p.name_en ?? p.name_ar ?? p.building_id}</strong><br/>No: ${p.building_no ?? '—'} | Category: ${p.category ?? '—'}<br/>Floors: ${p.floors_count ?? '—'} | Area: ${(((p.area_sqm as number) ?? 0) / 1000).toFixed(1)}k m²<br/>Status: ${p.status ?? '—'} | Branch: ${p.branch ?? '—'}`,
       metrics: ['area_sqm', 'floors_count'],
+      labelField: 'building_no',
     },
   },
   {
     id: 'bld_rooms',
-    group: 'bld',
-    title: { ar: 'تصنيف الغرف', en: 'Room Classification' },
+    group: 'plan',
+    title: { ar: 'الغرف', en: 'Rooms' },
     geometryType: 'fill',
     source: { type: 'geojson', url: '/data/bld_rooms.geojson', promoteId: 'room_id' },
     paint: {
@@ -217,10 +219,30 @@ export const LAYER_REGISTRY: LayerDef[] = [
     interactive: true,
     metadata: {
       searchableFields: ['room_id', 'room_no', 'name_ar', 'name_en', 'department', 'building_no'],
-      popupTemplate: (p) =>
-        `<strong>${p.name_en ?? p.name_ar ?? p.room_id}</strong><br/>Building: ${p.building_no ?? '—'} | Floor: ${p.floor_no ?? '—'}<br/>Department: ${p.department ?? '—'}<br/>Capacity: ${p.capacity ?? '—'} | Area: ${p.area_sqm ?? '—'} m²`,
       metrics: ['area_sqm', 'capacity'],
     },
+  },
+  {
+    id: 'plan_doors',
+    group: 'plan',
+    title: { ar: 'الأبواب', en: 'Doors' },
+    geometryType: 'line',
+    source: { type: 'geojson', url: '/data/plan_doors.geojson', promoteId: 'door_id' },
+    paint: { 'line-color': '#f59e0b', 'line-width': 2.2, 'line-opacity': 0.95 },
+    minzoom: 16,
+    interactive: true,
+    metadata: {},
+  },
+  {
+    id: 'plan_walls',
+    group: 'plan',
+    title: { ar: 'الجدران', en: 'Walls' },
+    geometryType: 'line',
+    source: { type: 'geojson', url: '/data/plan_walls.geojson', promoteId: 'wall_id' },
+    paint: { 'line-color': '#334155', 'line-width': 1.6, 'line-opacity': 0.9 },
+    minzoom: 16,
+    interactive: true,
+    metadata: {},
   },
   {
     id: 'bld_gates',
