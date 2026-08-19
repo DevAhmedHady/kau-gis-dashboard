@@ -25,7 +25,7 @@ export default function Header() {
       <div className="header__brand">
         <span className="header__mark" aria-hidden />
         <div>
-          <div className="header__title">{ar ? 'لوحة كاو المكانية' : 'KAU Spatial Dashboard'}</div>
+          <div className="header__title">{ar ? 'لوحة جامعة الملك عبد العزيز المكانية' : 'KAU Spatial Dashboard'}</div>
           <div className="header__sub">{ar ? 'جامعة الملك عبد العزيز' : 'King Abdulaziz University'}</div>
         </div>
       </div>
