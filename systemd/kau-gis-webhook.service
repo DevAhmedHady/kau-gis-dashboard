@@ -1,0 +1,17 @@
+[Unit]
+Description=KAU GIS Dashboard GitHub Webhook Deployer
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+User=hermes
+WorkingDirectory=/home/hermes/kau-gis-dashboard
+Environment="KAU_WEBHOOK_SECRET=change-me-in-production"
+Environment="KAU_WEBHOOK_PORT=9000"
+ExecStart=/usr/bin/node /home/hermes/kau-gis-dashboard/webhook-server.js
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
