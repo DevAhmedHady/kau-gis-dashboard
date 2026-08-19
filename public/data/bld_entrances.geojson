@@ -1,0 +1,58 @@
+{
+  "type": "FeatureCollection",
+  "name": "bld_entrances",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "ENT-001A",
+      "geometry": { "type": "Point", "coordinates": [39.1581, 21.49255] },
+      "properties": {
+        "entrance_id": "ENT-001A",
+        "building_id": "BLD-001",
+        "access_type": "Main",
+        "emergency_exit": false,
+        "floor_level": 0,
+        "accessible": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ENT-001B",
+      "geometry": { "type": "Point", "coordinates": [39.1585, 21.49255] },
+      "properties": {
+        "entrance_id": "ENT-001B",
+        "building_id": "BLD-001",
+        "access_type": "Emergency Only",
+        "emergency_exit": true,
+        "floor_level": 0,
+        "accessible": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ENT-042A",
+      "geometry": { "type": "Point", "coordinates": [39.1602, 21.4904] },
+      "properties": {
+        "entrance_id": "ENT-042A",
+        "building_id": "BLD-042",
+        "access_type": "Main",
+        "emergency_exit": false,
+        "floor_level": 0,
+        "accessible": true
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ENT-012A",
+      "geometry": { "type": "Point", "coordinates": [39.1612, 21.49145] },
+      "properties": {
+        "entrance_id": "ENT-012A",
+        "building_id": "BLD-012",
+        "access_type": "Main",
+        "emergency_exit": false,
+        "floor_level": 0,
+        "accessible": true
+      }
+    }
+  ]
+}

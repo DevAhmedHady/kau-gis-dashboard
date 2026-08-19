@@ -1,0 +1,70 @@
+{
+  "type": "FeatureCollection",
+  "name": "net_parking_lots",
+  "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+  "features": [
+    {
+      "type": "Feature",
+      "id": "PRK-01",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[39.1570, 21.4930], [39.1578, 21.4930], [39.1578, 21.4935], [39.1570, 21.4935], [39.1570, 21.4930]]]
+      },
+      "properties": {
+        "parking_id": "PRK-01",
+        "name_ar": "موقف هيئة التدريس - البوابة الرئيسية",
+        "name_en": "Faculty Parking - Main Gate",
+        "type": "Faculty",
+        "capacity": 320,
+        "occupied": 198,
+        "ev_charging": true,
+        "ev_charging_count": 12,
+        "floors": 1,
+        "covered": true,
+        "hourly_rate_sar": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "PRK-07",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[39.1610, 21.4875], [39.1622, 21.4875], [39.1622, 21.4882], [39.1610, 21.4882], [39.1610, 21.4875]]]
+      },
+      "properties": {
+        "parking_id": "PRK-07",
+        "name_ar": "موقف الطلاب - كلية العلوم",
+        "name_en": "Student Parking - Science College",
+        "type": "Student",
+        "capacity": 580,
+        "occupied": 412,
+        "ev_charging": false,
+        "ev_charging_count": 0,
+        "floors": 2,
+        "covered": false,
+        "hourly_rate_sar": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "PRK-12",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[39.1595, 21.4910], [39.1600, 21.4910], [39.1600, 21.4914], [39.1595, 21.4914], [39.1595, 21.4910]]]
+      },
+      "properties": {
+        "parking_id": "PRK-12",
+        "name_ar": "موقف كبار الزوار - الإدارة",
+        "name_en": "VIP Parking - Administration",
+        "type": "VIP",
+        "capacity": 45,
+        "occupied": 12,
+        "ev_charging": true,
+        "ev_charging_count": 6,
+        "floors": 1,
+        "covered": true,
+        "hourly_rate_sar": 0
+      }
+    }
+  ]
+}

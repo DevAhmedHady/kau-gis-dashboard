@@ -1,0 +1,52 @@
+{
+  "type": "FeatureCollection",
+  "name": "utl_security_nodes",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "SEC-01",
+      "geometry": { "type": "Point", "coordinates": [39.1562, 21.4908] },
+      "properties": {
+        "node_id": "SEC-01",
+        "type": "Gate Barrier",
+        "recording": true,
+        "status": "Active"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "SEC-02",
+      "geometry": { "type": "Point", "coordinates": [39.1583, 21.4926] },
+      "properties": {
+        "node_id": "SEC-02",
+        "type": "CCTV",
+        "coverage_angle": 90,
+        "resolution": "4K",
+        "recording": true,
+        "status": "Active"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "SEC-03",
+      "geometry": { "type": "Point", "coordinates": [39.1614, 21.4914] },
+      "properties": {
+        "node_id": "SEC-03",
+        "type": "Emergency Phone",
+        "recording": false,
+        "status": "Active"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "SEC-04",
+      "geometry": { "type": "Point", "coordinates": [39.1605, 21.4904] },
+      "properties": {
+        "node_id": "SEC-04",
+        "type": "Access Control",
+        "recording": true,
+        "status": "Maintenance"
+      }
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "type": "FeatureCollection",
+  "name": "env_green_areas",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "GRN-01",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1610, 21.4932], [39.1638, 21.4932], [39.1638, 21.4946], [39.1610, 21.4946], [39.1610, 21.4932]]] },
+      "properties": { "green_id": "GRN-01", "name_ar": "حديقة الجامعة المركزية", "name_en": "Central University Park", "type": "Park", "area_sqm": 42000, "irrigation": "Automated", "native_species_pct": 65, "maintenance_level": "High" }
+    },
+    {
+      "type": "Feature",
+      "id": "GRN-02",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1586, 21.4929], [39.1596, 21.4929], [39.1596, 21.4936], [39.1586, 21.4936], [39.1586, 21.4929]]] },
+      "properties": { "green_id": "GRN-02", "name_ar": "حديقة كلية الهندسة", "name_en": "Engineering Courtyard Garden", "type": "Garden", "area_sqm": 6200, "irrigation": "Automated", "native_species_pct": 40, "maintenance_level": "Medium" }
+    },
+    {
+      "type": "Feature",
+      "id": "GRN-03",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1628, 21.4934], [39.1642, 21.4934], [39.1642, 21.4944], [39.1628, 21.4944], [39.1628, 21.4934]]] },
+      "properties": { "green_id": "GRN-03", "name_ar": "ملعب كرة القدم", "name_en": "Football Pitch", "type": "Sports Field", "area_sqm": 10500, "irrigation": "Automated", "native_species_pct": 10, "maintenance_level": "High" }
+    },
+    {
+      "type": "Feature",
+      "id": "GRN-04",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1600, 21.4916], [39.1608, 21.4916], [39.1608, 21.4922], [39.1600, 21.4922], [39.1600, 21.4916]]] },
+      "properties": { "green_id": "GRN-04", "name_ar": "ساحة الملك فيصل", "name_en": "King Faisal Plaza", "type": "Plaza", "area_sqm": 4800, "irrigation": "Manual", "native_species_pct": 25, "maintenance_level": "High" }
+    },
+    {
+      "type": "Feature",
+      "id": "GRN-05",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1614, 21.4906], [39.1619, 21.4906], [39.1619, 21.4910], [39.1614, 21.4910], [39.1614, 21.4906]]] },
+      "properties": { "green_id": "GRN-05", "name_ar": "فناء الإدارة", "name_en": "Administration Courtyard", "type": "Courtyard", "area_sqm": 2100, "irrigation": "Automated", "native_species_pct": 55, "maintenance_level": "Medium" }
+    },
+    {
+      "type": "Feature",
+      "id": "GRN-06",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.16025, 21.49015], [39.16075, 21.49015], [39.16075, 21.49055], [39.16025, 21.49055], [39.16025, 21.49015]]] },
+      "properties": { "green_id": "GRN-06", "name_ar": "السطح الأخضر للمكتبة", "name_en": "Library Green Roof", "type": "Green Roof", "area_sqm": 1800, "irrigation": "Automated", "native_species_pct": 80, "maintenance_level": "Medium" }
+    },
+    {
+      "type": "Feature",
+      "id": "GRN-07",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1561, 21.4871], [39.1565, 21.4871], [39.1565, 21.4946], [39.1561, 21.4946], [39.1561, 21.4871]]] },
+      "properties": { "green_id": "GRN-07", "name_ar": "الحزام الأخضر الغربي", "name_en": "West Buffer Belt", "type": "Buffer Zone", "area_sqm": 31200, "irrigation": "None", "native_species_pct": 90, "maintenance_level": "Low" }
+    },
+    {
+      "type": "Feature",
+      "id": "GRN-08",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1574, 21.4908], [39.1580, 21.4908], [39.1580, 21.4913], [39.1574, 21.4913], [39.1574, 21.4908]]] },
+      "properties": { "green_id": "GRN-08", "name_ar": "حديقة الطب", "name_en": "Medicine Garden", "type": "Garden", "area_sqm": 3400, "irrigation": "Automated", "native_species_pct": 50, "maintenance_level": "High" }
+    },
+    {
+      "type": "Feature",
+      "id": "GRN-09",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1632, 21.4882], [39.1643, 21.4882], [39.1643, 21.4888], [39.1632, 21.4888], [39.1632, 21.4882]]] },
+      "properties": { "green_id": "GRN-09", "name_ar": "حديقة العلوم", "name_en": "Science Grove Park", "type": "Park", "area_sqm": 7200, "irrigation": "Manual", "native_species_pct": 70, "maintenance_level": "Medium" }
+    },
+    {
+      "type": "Feature",
+      "id": "GRN-10",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1631, 21.4872], [39.1639, 21.4872], [39.1639, 21.4874], [39.1631, 21.4874], [39.1631, 21.4872]]] },
+      "properties": { "green_id": "GRN-10", "name_ar": "ملعب التنس", "name_en": "Tennis Courts Lawn", "type": "Sports Field", "area_sqm": 2600, "irrigation": "Automated", "native_species_pct": 5, "maintenance_level": "High" }
+    }
+  ]
+}

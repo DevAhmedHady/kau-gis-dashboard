@@ -1,0 +1,51 @@
+{
+  "type": "FeatureCollection",
+  "name": "adm_parcels",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "P-101",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[39.1578, 21.4921], [39.1588, 21.4921], [39.1588, 21.4930], [39.1578, 21.4930], [39.1578, 21.4921]]]
+      },
+      "properties": {
+        "parcel_id": "P-101",
+        "zone_id": "Z-ACD",
+        "land_use": "Academic",
+        "ownership": "University",
+        "area_sqm": 8200
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "P-204",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[39.1600, 21.4899], [39.1610, 21.4899], [39.1610, 21.4908], [39.1600, 21.4908], [39.1600, 21.4899]]]
+      },
+      "properties": {
+        "parcel_id": "P-204",
+        "zone_id": "Z-ADM",
+        "land_use": "Academic",
+        "ownership": "University",
+        "area_sqm": 6400
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "P-318",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[39.1570, 21.4878], [39.1582, 21.4878], [39.1582, 21.4886], [39.1570, 21.4886], [39.1570, 21.4878]]]
+      },
+      "properties": {
+        "parcel_id": "P-318",
+        "zone_id": "Z-RES",
+        "land_use": "Housing",
+        "ownership": "University",
+        "area_sqm": 9100
+      }
+    }
+  ]
+}

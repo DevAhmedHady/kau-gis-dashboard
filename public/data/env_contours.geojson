@@ -1,0 +1,36 @@
+{
+  "type": "FeatureCollection",
+  "name": "env_contours",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "CTR-010",
+      "geometry": { "type": "LineString", "coordinates": [[39.1562, 21.4872], [39.1590, 21.4876], [39.1620, 21.4874], [39.1643, 21.4878]] },
+      "properties": { "contour_id": "CTR-010", "elevation_m": 10, "index_contour": true, "length_m": 850 }
+    },
+    {
+      "type": "Feature",
+      "id": "CTR-015",
+      "geometry": { "type": "LineString", "coordinates": [[39.1562, 21.4880], [39.1590, 21.4884], [39.1620, 21.4882], [39.1643, 21.4886]] },
+      "properties": { "contour_id": "CTR-015", "elevation_m": 15, "index_contour": false, "length_m": 820 }
+    },
+    {
+      "type": "Feature",
+      "id": "CTR-020",
+      "geometry": { "type": "LineString", "coordinates": [[39.1562, 21.4902], [39.1595, 21.4906], [39.1625, 21.4903], [39.1643, 21.4908]] },
+      "properties": { "contour_id": "CTR-020", "elevation_m": 20, "index_contour": true, "length_m": 840 }
+    },
+    {
+      "type": "Feature",
+      "id": "CTR-025",
+      "geometry": { "type": "LineString", "coordinates": [[39.1562, 21.4928], [39.1590, 21.4932], [39.1620, 21.4929], [39.1643, 21.4934]] },
+      "properties": { "contour_id": "CTR-025", "elevation_m": 25, "index_contour": false, "length_m": 830 }
+    },
+    {
+      "type": "Feature",
+      "id": "CTR-030",
+      "geometry": { "type": "LineString", "coordinates": [[39.1570, 21.4942], [39.1595, 21.4946], [39.1620, 21.4943], [39.1640, 21.4946]] },
+      "properties": { "contour_id": "CTR-030", "elevation_m": 30, "index_contour": true, "length_m": 760 }
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "type": "FeatureCollection",
+  "name": "net_roads",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "RD-01",
+      "geometry": { "type": "LineString", "coordinates": [[39.1562, 21.4908], [39.1605, 21.4908], [39.1643, 21.4908]] },
+      "properties": { "road_id": "RD-01", "name_ar": "طريق الملك عبدالعزيز", "name_en": "King Abdulaziz Road", "hierarchy": "Primary", "speed_limit_kmh": 40, "one_way": false, "surface_type": "Asphalt", "length_m": 840 }
+    },
+    {
+      "type": "Feature",
+      "id": "RD-02",
+      "geometry": { "type": "LineString", "coordinates": [[39.1592, 21.4872], [39.1592, 21.4908], [39.1592, 21.4946]] },
+      "properties": { "road_id": "RD-02", "name_ar": "شارع الجامعات", "name_en": "Universities Street", "hierarchy": "Secondary", "speed_limit_kmh": 30, "one_way": false, "surface_type": "Asphalt", "length_m": 820 }
+    },
+    {
+      "type": "Feature",
+      "id": "RD-03",
+      "geometry": { "type": "LineString", "coordinates": [[39.1608, 21.4908], [39.1608, 21.4890]] },
+      "properties": { "road_id": "RD-03", "name_ar": "طريق الخدمة الشرقي", "name_en": "East Service Road", "hierarchy": "Service", "speed_limit_kmh": 20, "one_way": true, "surface_type": "Asphalt", "length_m": 200 }
+    },
+    {
+      "type": "Feature",
+      "id": "RD-04",
+      "geometry": { "type": "LineString", "coordinates": [[39.1562, 21.4874], [39.1562, 21.4908], [39.1562, 21.4944]] },
+      "properties": { "road_id": "RD-04", "name_ar": "الطريق الدائري الغربي", "name_en": "West Ring Road", "hierarchy": "Primary", "speed_limit_kmh": 40, "one_way": false, "surface_type": "Asphalt", "length_m": 780 }
+    },
+    {
+      "type": "Feature",
+      "id": "RD-05",
+      "geometry": { "type": "LineString", "coordinates": [[39.1562, 21.4874], [39.1600, 21.4874], [39.1643, 21.4874]] },
+      "properties": { "road_id": "RD-05", "name_ar": "الطريق الجنوبي", "name_en": "South Campus Road", "hierarchy": "Secondary", "speed_limit_kmh": 30, "one_way": false, "surface_type": "Asphalt", "length_m": 840 }
+    },
+    {
+      "type": "Feature",
+      "id": "RD-06",
+      "geometry": { "type": "LineString", "coordinates": [[39.1562, 21.4944], [39.1600, 21.4944], [39.1643, 21.4944]] },
+      "properties": { "road_id": "RD-06", "name_ar": "الطريق الشمالي", "name_en": "North Campus Road", "hierarchy": "Secondary", "speed_limit_kmh": 30, "one_way": false, "surface_type": "Asphalt", "length_m": 840 }
+    },
+    {
+      "type": "Feature",
+      "id": "RD-07",
+      "geometry": { "type": "LineString", "coordinates": [[39.1618, 21.4874], [39.1618, 21.4908], [39.1618, 21.4932]] },
+      "properties": { "road_id": "RD-07", "name_ar": "شارع الإدارة", "name_en": "Administration Street", "hierarchy": "Service", "speed_limit_kmh": 20, "one_way": false, "surface_type": "Concrete", "length_m": 640 }
+    },
+    {
+      "type": "Feature",
+      "id": "RD-08",
+      "geometry": { "type": "LineString", "coordinates": [[39.1636, 21.4874], [39.1636, 21.4908]] },
+      "properties": { "road_id": "RD-08", "name_ar": "طريق العلوم", "name_en": "Science Access Road", "hierarchy": "Service", "speed_limit_kmh": 20, "one_way": true, "surface_type": "Asphalt", "length_m": 380 }
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "type": "FeatureCollection",
+  "name": "bld_footprints",
+  "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+  "features": [
+    {
+      "type": "Feature",
+      "id": "BLD-001",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1581, 21.4923], [39.1585, 21.4923], [39.1585, 21.4928], [39.1581, 21.4928], [39.1581, 21.4923]]] },
+      "properties": { "building_id": "BLD-001", "name_ar": "كلية الهندسة", "name_en": "Faculty of Engineering", "faculty": "Engineering", "floors_count": 5, "usage_type": "Academic", "gross_area_sqm": 28500, "year_built": 1985, "status": "Active" }
+    },
+    {
+      "type": "Feature",
+      "id": "BLD-042",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1602, 21.4901], [39.1608, 21.4901], [39.1608, 21.4907], [39.1602, 21.4907], [39.1602, 21.4901]]] },
+      "properties": { "building_id": "BLD-042", "name_ar": "المكتبة المركزية", "name_en": "Central Library", "faculty": "Central Services", "floors_count": 4, "usage_type": "Library", "gross_area_sqm": 15200, "year_built": 1992, "status": "Active" }
+    },
+    {
+      "type": "Feature",
+      "id": "BLD-087",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1625, 21.4889], [39.1631, 21.4889], [39.1631, 21.4894], [39.1625, 21.4894], [39.1625, 21.4889]]] },
+      "properties": { "building_id": "BLD-087", "name_ar": "مبنى المختبرات المركزية", "name_en": "Central Laboratories", "faculty": "Science", "floors_count": 3, "usage_type": "Laboratory", "gross_area_sqm": 9800, "year_built": 2005, "status": "Active" }
+    },
+    {
+      "type": "Feature",
+      "id": "BLD-012",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1612, 21.4912], [39.1618, 21.4912], [39.1618, 21.4917], [39.1612, 21.4917], [39.1612, 21.4912]]] },
+      "properties": { "building_id": "BLD-012", "name_ar": "مبنى الإدارة العامة", "name_en": "Administration Building", "faculty": "Administration", "floors_count": 6, "usage_type": "Administrative", "gross_area_sqm": 18400, "year_built": 1978, "status": "Active" }
+    },
+    {
+      "type": "Feature",
+      "id": "BLD-055",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1572, 21.4882], [39.1578, 21.4882], [39.1578, 21.4887], [39.1572, 21.4887], [39.1572, 21.4882]]] },
+      "properties": { "building_id": "BLD-055", "name_ar": "سكن الطلاب أ", "name_en": "Student Housing A", "faculty": "Housing", "floors_count": 8, "usage_type": "Residential", "gross_area_sqm": 22100, "year_built": 2011, "status": "Active" }
+    },
+    {
+      "type": "Feature",
+      "id": "BLD-018",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1568, 21.4900], [39.1575, 21.4900], [39.1575, 21.4906], [39.1568, 21.4906], [39.1568, 21.4900]]] },
+      "properties": { "building_id": "BLD-018", "name_ar": "كلية الطب", "name_en": "Faculty of Medicine", "faculty": "Medicine", "floors_count": 7, "usage_type": "Academic", "gross_area_sqm": 31200, "year_built": 1998, "status": "Active" }
+    },
+    {
+      "type": "Feature",
+      "id": "BLD-023",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1620, 21.4924], [39.1626, 21.4924], [39.1626, 21.4929], [39.1620, 21.4929], [39.1620, 21.4924]]] },
+      "properties": { "building_id": "BLD-023", "name_ar": "كلية الآداب والعلوم الإنسانية", "name_en": "Faculty of Arts", "faculty": "Arts", "floors_count": 4, "usage_type": "Academic", "gross_area_sqm": 16800, "year_built": 1982, "status": "Active" }
+    },
+    {
+      "type": "Feature",
+      "id": "BLD-031",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1630, 21.4874], [39.1639, 21.4874], [39.1639, 21.4881], [39.1630, 21.4881], [39.1630, 21.4874]]] },
+      "properties": { "building_id": "BLD-031", "name_ar": "المجمع الرياضي", "name_en": "Sports Complex", "faculty": "Student Affairs", "floors_count": 3, "usage_type": "Sports", "gross_area_sqm": 24600, "year_built": 2008, "status": "Active" }
+    },
+    {
+      "type": "Feature",
+      "id": "BLD-044",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1588, 21.4894], [39.1594, 21.4894], [39.1594, 21.4900], [39.1588, 21.4900], [39.1588, 21.4894]]] },
+      "properties": { "building_id": "BLD-044", "name_ar": "كلية الحاسبات وتقنية المعلومات", "name_en": "Faculty of Computing", "faculty": "Computing", "floors_count": 5, "usage_type": "Academic", "gross_area_sqm": 19800, "year_built": 2014, "status": "Active" }
+    },
+    {
+      "type": "Feature",
+      "id": "BLD-061",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1596, 21.4910], [39.1601, 21.4910], [39.1601, 21.4915], [39.1596, 21.4915], [39.1596, 21.4910]]] },
+      "properties": { "building_id": "BLD-061", "name_ar": "مركز المؤتمرات", "name_en": "Conference Center", "faculty": "Central Services", "floors_count": 3, "usage_type": "Mixed", "gross_area_sqm": 12500, "year_built": 2016, "status": "Active" }
+    },
+    {
+      "type": "Feature",
+      "id": "BLD-070",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1564, 21.4916], [39.1570, 21.4916], [39.1570, 21.4921], [39.1564, 21.4921], [39.1564, 21.4916]]] },
+      "properties": { "building_id": "BLD-070", "name_ar": "كلية الاقتصاد والإدارة", "name_en": "Faculty of Economics", "faculty": "Economics", "floors_count": 5, "usage_type": "Academic", "gross_area_sqm": 17600, "year_built": 1990, "status": "Active" }
+    },
+    {
+      "type": "Feature",
+      "id": "BLD-078",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1572, 21.4872], [39.1578, 21.4872], [39.1578, 21.4877], [39.1572, 21.4877], [39.1572, 21.4872]]] },
+      "properties": { "building_id": "BLD-078", "name_ar": "سكن الطلاب ب", "name_en": "Student Housing B", "faculty": "Housing", "floors_count": 8, "usage_type": "Residential", "gross_area_sqm": 21400, "year_built": 2013, "status": "Active" }
+    },
+    {
+      "type": "Feature",
+      "id": "BLD-091",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1594, 21.4936], [39.1599, 21.4936], [39.1599, 21.4941], [39.1594, 21.4941], [39.1594, 21.4936]]] },
+      "properties": { "building_id": "BLD-091", "name_ar": "الجامع الكبير", "name_en": "Grand Mosque", "faculty": "Central Services", "floors_count": 2, "usage_type": "Mixed", "gross_area_sqm": 8900, "year_built": 1988, "status": "Active" }
+    },
+    {
+      "type": "Feature",
+      "id": "BLD-104",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1634, 21.4904], [39.1640, 21.4904], [39.1640, 21.4909], [39.1634, 21.4909], [39.1634, 21.4904]]] },
+      "properties": { "building_id": "BLD-104", "name_ar": "كلية علوم الأرض", "name_en": "Faculty of Earth Sciences", "faculty": "Science", "floors_count": 4, "usage_type": "Laboratory", "gross_area_sqm": 14200, "year_built": 2001, "status": "Active" }
+    },
+    {
+      "type": "Feature",
+      "id": "BLD-110",
+      "geometry": { "type": "Polygon", "coordinates": [[[39.1586, 21.4918], [39.1591, 21.4918], [39.1591, 21.4922], [39.1586, 21.4922], [39.1586, 21.4918]]] },
+      "properties": { "building_id": "BLD-110", "name_ar": "ملحق كلية الهندسة", "name_en": "Engineering Annex", "faculty": "Engineering", "floors_count": 4, "usage_type": "Academic", "gross_area_sqm": 9600, "year_built": 2025, "status": "Under Construction" }
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "type": "FeatureCollection",
+  "name": "bld_amenities",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "AMN-001",
+      "geometry": { "type": "Point", "coordinates": [39.15825, 21.4925] },
+      "properties": {
+        "amenity_id": "AMN-001",
+        "building_id": "BLD-001",
+        "type": "Auditorium",
+        "floor_level": 1,
+        "room_number": "ENG-101",
+        "capacity": 280,
+        "status": "Operational"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "AMN-042",
+      "geometry": { "type": "Point", "coordinates": [39.16045, 21.4904] },
+      "properties": {
+        "amenity_id": "AMN-042",
+        "building_id": "BLD-042",
+        "type": "Cafeteria",
+        "floor_level": 0,
+        "room_number": "LIB-C1",
+        "capacity": 120,
+        "status": "Operational"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "AMN-087",
+      "geometry": { "type": "Point", "coordinates": [39.1628, 21.48915] },
+      "properties": {
+        "amenity_id": "AMN-087",
+        "building_id": "BLD-087",
+        "type": "Lab",
+        "floor_level": 2,
+        "room_number": "SCI-210",
+        "capacity": 40,
+        "status": "Maintenance"
+      }
+    }
+  ]
+}

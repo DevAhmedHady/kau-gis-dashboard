@@ -1,0 +1,58 @@
+{
+  "type": "FeatureCollection",
+  "name": "utl_lighting",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "LP-1001",
+      "geometry": { "type": "Point", "coordinates": [39.1574, 21.4932] },
+      "properties": {
+        "pole_id": "LP-1001",
+        "type": "Street",
+        "height_m": 9,
+        "wattage": 150,
+        "status": "Operational",
+        "last_maintenance": "2026-03-12"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "LP-1002",
+      "geometry": { "type": "Point", "coordinates": [39.1592, 21.4918] },
+      "properties": {
+        "pole_id": "LP-1002",
+        "type": "Pathway",
+        "height_m": 5,
+        "wattage": 60,
+        "status": "Operational",
+        "last_maintenance": "2026-01-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "LP-1003",
+      "geometry": { "type": "Point", "coordinates": [39.1610, 21.4905] },
+      "properties": {
+        "pole_id": "LP-1003",
+        "type": "Solar",
+        "height_m": 6,
+        "wattage": 80,
+        "status": "Faulty",
+        "last_maintenance": "2025-11-04"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "LP-1004",
+      "geometry": { "type": "Point", "coordinates": [39.1628, 21.4892] },
+      "properties": {
+        "pole_id": "LP-1004",
+        "type": "Flood",
+        "height_m": 12,
+        "wattage": 250,
+        "status": "Maintenance",
+        "last_maintenance": "2026-06-01"
+      }
+    }
+  ]
+}

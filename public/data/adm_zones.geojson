@@ -1,0 +1,81 @@
+{
+  "type": "FeatureCollection",
+  "name": "adm_zones",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "Z-ACD",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[39.1560, 21.4910], [39.1605, 21.4910], [39.1605, 21.4948], [39.1560, 21.4948], [39.1560, 21.4910]]]
+      },
+      "properties": {
+        "zone_id": "Z-ACD",
+        "sector_name_ar": "القطاع الأكاديمي",
+        "sector_name_en": "Academic Sector",
+        "zone_type": "Academic",
+        "area_sqm": 1680000
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Z-ADM",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[39.1605, 21.4900], [39.1625, 21.4900], [39.1625, 21.4930], [39.1605, 21.4930], [39.1605, 21.4900]]]
+      },
+      "properties": {
+        "zone_id": "Z-ADM",
+        "sector_name_ar": "القطاع الإداري",
+        "sector_name_en": "Administrative Sector",
+        "zone_type": "Administrative",
+        "area_sqm": 540000
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Z-RES",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[39.1560, 21.4870], [39.1605, 21.4870], [39.1605, 21.4900], [39.1560, 21.4900], [39.1560, 21.4870]]]
+      },
+      "properties": {
+        "zone_id": "Z-RES",
+        "sector_name_ar": "القطاع السكني",
+        "sector_name_en": "Residential Sector",
+        "zone_type": "Residential",
+        "area_sqm": 1120000
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Z-RSH",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[39.1625, 21.4870], [39.1645, 21.4870], [39.1645, 21.4915], [39.1625, 21.4915], [39.1625, 21.4870]]]
+      },
+      "properties": {
+        "zone_id": "Z-RSH",
+        "sector_name_ar": "قطاع البحث العلمي",
+        "sector_name_en": "Research Sector",
+        "zone_type": "Research",
+        "area_sqm": 810000
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Z-REC",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[39.1605, 21.4930], [39.1645, 21.4930], [39.1645, 21.4948], [39.1605, 21.4948], [39.1605, 21.4930]]]
+      },
+      "properties": {
+        "zone_id": "Z-REC",
+        "sector_name_ar": "القطاع الترفيهي",
+        "sector_name_en": "Recreational Sector",
+        "zone_type": "Recreational",
+        "area_sqm": 620000
+      }
+    }
+  ]
+}

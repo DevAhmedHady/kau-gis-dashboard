@@ -1,0 +1,54 @@
+{
+  "type": "FeatureCollection",
+  "name": "utl_water_lines",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "WTR-01",
+      "geometry": { "type": "LineString", "coordinates": [[39.1564, 21.4912], [39.1592, 21.4912], [39.1615, 21.4912]] },
+      "properties": { "line_id": "WTR-01", "network_type": "Potable", "diameter_mm": 300, "material": "Ductile Iron", "flow_direction": "Forward", "status": "Active", "length_m": 530 }
+    },
+    {
+      "type": "Feature",
+      "id": "WTR-02",
+      "geometry": { "type": "LineString", "coordinates": [[39.1572, 21.4932], [39.1583, 21.4926], [39.1592, 21.4918]] },
+      "properties": { "line_id": "WTR-02", "network_type": "Irrigation", "diameter_mm": 150, "material": "HDPE", "flow_direction": "Forward", "status": "Active", "length_m": 280 }
+    },
+    {
+      "type": "Feature",
+      "id": "WTR-03",
+      "geometry": { "type": "LineString", "coordinates": [[39.1608, 21.4908], [39.1614, 21.4914]] },
+      "properties": { "line_id": "WTR-03", "network_type": "Fire Protection", "diameter_mm": 200, "material": "Steel", "status": "Active", "length_m": 95 }
+    },
+    {
+      "type": "Feature",
+      "id": "WTR-04",
+      "geometry": { "type": "LineString", "coordinates": [[39.1564, 21.4896], [39.1592, 21.4896], [39.1620, 21.4896]] },
+      "properties": { "line_id": "WTR-04", "network_type": "Chilled Water", "diameter_mm": 250, "material": "Steel", "flow_direction": "Forward", "status": "Active", "length_m": 580 }
+    },
+    {
+      "type": "Feature",
+      "id": "WTR-05",
+      "geometry": { "type": "LineString", "coordinates": [[39.1564, 21.4876], [39.1592, 21.4876], [39.1636, 21.4876]] },
+      "properties": { "line_id": "WTR-05", "network_type": "Sewage", "diameter_mm": 400, "material": "PVC", "flow_direction": "Forward", "status": "Active", "length_m": 750 }
+    },
+    {
+      "type": "Feature",
+      "id": "WTR-06",
+      "geometry": { "type": "LineString", "coordinates": [[39.1615, 21.4912], [39.1634, 21.4906]] },
+      "properties": { "line_id": "WTR-06", "network_type": "Potable", "diameter_mm": 200, "material": "HDPE", "flow_direction": "Forward", "status": "Active", "length_m": 220 }
+    },
+    {
+      "type": "Feature",
+      "id": "WTR-07",
+      "geometry": { "type": "LineString", "coordinates": [[39.1610, 21.4934], [39.1624, 21.4938], [39.1636, 21.4942]] },
+      "properties": { "line_id": "WTR-07", "network_type": "Irrigation", "diameter_mm": 110, "material": "HDPE", "flow_direction": "Forward", "status": "Active", "length_m": 310 }
+    },
+    {
+      "type": "Feature",
+      "id": "WTR-08",
+      "geometry": { "type": "LineString", "coordinates": [[39.1572, 21.4903], [39.1572, 21.4884]] },
+      "properties": { "line_id": "WTR-08", "network_type": "Fire Protection", "diameter_mm": 150, "material": "Ductile Iron", "status": "Isolated", "length_m": 210 }
+    }
+  ]
+}

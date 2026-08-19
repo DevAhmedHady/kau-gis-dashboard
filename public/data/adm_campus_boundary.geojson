@@ -1,0 +1,21 @@
+{
+  "type": "FeatureCollection",
+  "name": "adm_campus_boundary",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "CMP-KAU",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[39.1560, 21.4870], [39.1645, 21.4870], [39.1645, 21.4948], [39.1560, 21.4948], [39.1560, 21.4870]]]
+      },
+      "properties": {
+        "campus_id": "CMP-KAU",
+        "name_ar": "جامعة الملك عبدالعزيز",
+        "name_en": "King Abdulaziz University",
+        "area_sqm": 9100000,
+        "established_year": 1967
+      }
+    }
+  ]
+}
