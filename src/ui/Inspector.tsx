@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useMemo, useState } from 'react';
+import { fieldAlias, formatFieldValue, popupTitle, visibleProperties } from '../core/fields';
 import { useAppStore } from '../core/store';
 import { LAYER_BY_ID } from '../layers/layer-registry';
 import { IconCheck, IconCopy, IconX } from './icons';
@@ -15,7 +16,7 @@ function groupProperties(props: Record<string, unknown>, ar: boolean): Group[] {
   const spatial: [string, unknown][] = [];
   const attrs: [string, unknown][] = [];
   const other: [string, unknown][] = [];
-  for (const entry of Object.entries(props)) {
+  for (const entry of visibleProperties(props)) {
     const [k] = entry;
     if (IDENTITY.test(k)) identity.push(entry);
     else if (SPATIAL.test(k)) spatial.push(entry);
@@ -38,14 +39,7 @@ export default function Inspector() {
 
   const layer = selected ? LAYER_BY_ID[selected.layerId] : undefined;
   const props = selected?.properties ?? {};
-  const title = String(
-    props.name_en ??
-      props.name_ar ??
-      props.description ??
-      props.building_no ??
-      props.parking_no ??
-      (ar ? 'تفاصيل المعلم' : 'Feature Details'),
-  );
+  const title = popupTitle(props, ar ? 'تفاصيل المعلم' : 'Feature Details');
   const groups = useMemo(() => groupProperties(props, ar), [props, ar]);
 
   async function copy(key: string, text: string): Promise<void> {
@@ -102,10 +96,10 @@ export default function Inspector() {
               <div className="inspector__group-title">{g.title}</div>
               <dl className="inspector__attr">
                 {g.entries.map(([key, value]) => {
-                  const text = formatValue(value);
+                  const text = formatFieldValue(key, value, locale);
                   return (
                     <span key={key} style={{ display: 'contents' }}>
-                      <dt>{key}</dt>
+                      <dt>{fieldAlias(key, locale)}</dt>
                       <dd>{text}</dd>
                       <button
                         type="button"
@@ -125,11 +119,4 @@ export default function Inspector() {
       )}
     </AnimatePresence>
   );
-}
-
-function formatValue(value: unknown): string {
-  if (Array.isArray(value)) return value.join(', ');
-  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
-  if (value == null) return '—';
-  return String(value);
 }

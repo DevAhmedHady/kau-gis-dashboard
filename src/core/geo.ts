@@ -1,4 +1,4 @@
-import type { Feature, Geometry, Position } from 'geojson';
+import type { Feature, FeatureCollection, Geometry, Position } from 'geojson';
 
 /** Main Sulaymaniyah campus, Jeddah -- where the geodatabase's detailed data sits. */
 export const KAU_CENTER: [number, number] = [39.2463, 21.493];
@@ -89,4 +89,27 @@ export function featureInExtent(feature: Feature, extent: BBox | null): boolean 
   if (!extent) return true;
   const box = geometryBBox(feature.geometry);
   return box ? bboxIntersects(box, extent) : false;
+}
+
+export function collectionBBox(
+  fc: FeatureCollection | undefined,
+  predicate?: (feature: Feature) => boolean,
+): BBox | null {
+  if (!fc?.features.length) return null;
+  let w = Infinity;
+  let s = Infinity;
+  let e = -Infinity;
+  let n = -Infinity;
+  let any = false;
+  for (const feature of fc.features) {
+    if (predicate && !predicate(feature)) continue;
+    const box = geometryBBox(feature.geometry);
+    if (!box) continue;
+    any = true;
+    if (box[0] < w) w = box[0];
+    if (box[1] < s) s = box[1];
+    if (box[2] > e) e = box[2];
+    if (box[3] > n) n = box[3];
+  }
+  return any ? [w, s, e, n] : null;
 }

@@ -31,6 +31,12 @@ export interface SelectedFeature {
   properties: Record<string, unknown>;
 }
 
+/** Per-layer definition query: `field IN (values)`. Independent across layers. */
+export interface LayerFilter {
+  field: string;
+  values: Array<string | number>;
+}
+
 export type ThemeMode = 'dark' | 'light';
 
 export interface MapViewState {
@@ -60,11 +66,17 @@ interface AppState {
   basemap: string;
   flyTo: { center: [number, number]; zoom: number } | null;
   zoomDelta: number | null;
+  fitBounds: BBox | null;
+  /** Applied definition queries, keyed by layer id. Missing key = no filter. */
+  filters: Record<string, LayerFilter>;
 
   setLayers: (layers: LayerState[]) => void;
   setLayerVisible: (id: string, visible: boolean) => void;
   setOpacity: (id: string, opacity: number) => void;
   toggleGroup: (group: LayerGroup) => void;
+  setLayerFilter: (id: string, filter: LayerFilter | null) => void;
+  clearLayerFilter: (id: string) => void;
+  clearAllFilters: () => void;
   setMetrics: (metrics: Partial<MetricsState>) => void;
   setCollections: (collections: Partial<Record<string, FeatureCollection>>) => void;
   setCollection: (id: string, collection: FeatureCollection) => void;
@@ -88,11 +100,14 @@ interface AppState {
   clearFlyTo: () => void;
   requestZoom: (delta: number) => void;
   clearZoomDelta: () => void;
+  requestFitBounds: (bbox: BBox) => void;
+  clearFitBounds: () => void;
 }
 
 const GROUPS: Record<LayerGroup, boolean> = {
   adm: true,
   bld: true,
+  plan: true,
   net: true,
   utl: true,
   env: true,
@@ -138,6 +153,8 @@ export const useAppStore = create<AppState>((set) => ({
   basemap: initialTheme === 'light' ? 'light' : 'dark',
   flyTo: null,
   zoomDelta: null,
+  fitBounds: null,
+  filters: {},
 
   setLayers: (layers) => set({ layers }),
   setLayerVisible: (id, visible) =>
@@ -152,6 +169,24 @@ export const useAppStore = create<AppState>((set) => ({
         layers: s.layers.map((l) => (l.group === group ? { ...l, visible } : l)),
       };
     }),
+  setLayerFilter: (id, filter) =>
+    set((s) => {
+      if (!filter || !filter.values.length) {
+        if (!(id in s.filters)) return s;
+        const rest = { ...s.filters };
+        delete rest[id];
+        return { filters: rest };
+      }
+      return { filters: { ...s.filters, [id]: filter } };
+    }),
+  clearLayerFilter: (id) =>
+    set((s) => {
+      if (!(id in s.filters)) return s;
+      const rest = { ...s.filters };
+      delete rest[id];
+      return { filters: rest };
+    }),
+  clearAllFilters: () => set({ filters: {} }),
   setMetrics: (metrics) => set((s) => ({ metrics: { ...s.metrics, ...metrics } })),
   setCollections: (collections) => set({ collections }),
   setCollection: (id, collection) =>
@@ -202,4 +237,6 @@ export const useAppStore = create<AppState>((set) => ({
   clearFlyTo: () => set({ flyTo: null }),
   requestZoom: (delta) => set({ zoomDelta: delta }),
   clearZoomDelta: () => set({ zoomDelta: null }),
+  requestFitBounds: (fitBounds) => set({ fitBounds }),
+  clearFitBounds: () => set({ fitBounds: null }),
 }));

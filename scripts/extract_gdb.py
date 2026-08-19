@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import re
 import sys
 from datetime import date, datetime
 from pathlib import Path
@@ -25,6 +26,43 @@ from shapely import set_precision
 
 # ponytail: 1e-6 deg ~= 0.11 m. Plenty for a campus map, and it roughly halves file size.
 COORD_PRECISION = 1e-6
+
+AUDIT_FIELDS = {
+    "OBJECTID", "OBJECTID_1", "OBJECTID_12", "GlobalID", "globalid",
+    "created_user", "created_date", "last_edited_user", "last_edited_date",
+    "CreationDate", "Creator", "EditDate", "Editor",
+    "enabled", "ancillaryRole", "RuleID", "Override",
+    "SHAPE", "Shape", "geometry",
+}
+
+def to_snake(name: str) -> str:
+    s = re.sub(r"[\s]+", "_", name)
+    s = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", s)
+    s = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s)
+    return s.replace("__", "_").lower()
+
+
+def auto_fields(columns: list[str], out_id: str, id_fields: list[str] | None = None) -> dict[str, str]:
+    """Keep populated GIS attributes; drop audit columns. IDs map onto out_id."""
+    mapping: dict[str, str] = {}
+    id_candidates = {*(id_fields or []), out_id}
+    assigned_id = False
+    for col in columns:
+        if col in AUDIT_FIELDS or col == "geometry":
+            continue
+        if col in ("SHAPE_Area", "Shape_Area"):
+            mapping[col] = "area_sqm"
+        elif col in ("SHAPE_Length", "Shape_Length"):
+            mapping[col] = "length_m"
+        elif col in id_candidates:
+            if assigned_id:
+                continue
+            mapping[col] = out_id
+            assigned_id = True
+        else:
+            mapping[col] = to_snake(col)
+    return mapping
+
 
 # out_id: property name the layer registry uses as promoteId.
 # fields: {source field: output property}. SHAPE_Area/SHAPE_Length are mapped like any other.
@@ -88,6 +126,20 @@ SPECS: list[dict] = [
             "RoomClassification": "classification", "ArabicRoomUsage": "usage_ar",
             "SHAPE_Area": "area_sqm",
         },
+    },
+    # Indoor / plan dataset (P* feature classes). Optional: skipped when the GDB
+    # does not contain that layer so a re-extract still succeeds.
+    {
+        "out": "plan_doors", "layer": "PDoor", "out_id": "door_id",
+        "optional": True, "fields": "auto",
+        "layer_aliases": ["PDoors", "BDoor", "Door"],
+        "id_fields": ["PDoorID", "DoorID", "PDoorId"],
+    },
+    {
+        "out": "plan_walls", "layer": "PWall", "out_id": "wall_id",
+        "optional": True, "fields": "auto",
+        "layer_aliases": ["PWalls", "BWall", "Wall"],
+        "id_fields": ["PWallID", "WallID", "PWallId"],
     },
     {
         "out": "bld_gates", "layer": "BIronGate", "out_id": "gate_id",
@@ -289,8 +341,23 @@ def clean(value):
     return value
 
 
-def build(spec: dict, gdb: str) -> tuple[dict, int]:
-    gdf = gpd.read_file(gdb, layer=spec["layer"], engine="pyogrio")
+def build(spec: dict, gdb: str) -> tuple[dict | None, int]:
+    layer_names = [spec["layer"], *spec.get("layer_aliases", [])]
+    gdf = None
+    used = spec["layer"]
+    last_err: Exception | None = None
+    for name in layer_names:
+        try:
+            gdf = gpd.read_file(gdb, layer=name, engine="pyogrio")
+            used = name
+            break
+        except Exception as err:
+            last_err = err
+    if gdf is None:
+        if spec.get("optional"):
+            print(f"skip optional {spec['out']:26} <- {'/'.join(layer_names):22} ({last_err})")
+            return None, 0
+        raise last_err or RuntimeError(f"layer not found: {layer_names}")
 
     if "where" in spec:
         gdf = gdf[spec["where"](gdf)]
@@ -305,8 +372,13 @@ def build(spec: dict, gdb: str) -> tuple[dict, int]:
                 {"SHAPE_Area": [p.area for p in parts]}, geometry=parts, crs=gdf.crs
             )
 
-        keep = {src: out for src, out in spec["fields"].items() if src in gdf.columns}
-        props = gdf[list(keep)].rename(columns=keep)
+        if spec.get("fields") == "auto":
+            keep = auto_fields(list(gdf.columns), spec["out_id"], spec.get("id_fields"))
+        else:
+            keep = {src: out for src, out in spec["fields"].items() if src in gdf.columns}
+        if not keep:
+            print(f"{spec['out']:26} <- {spec['layer']:22} no mappable fields", file=sys.stderr)
+        props = gdf[list(keep)].rename(columns=keep) if keep else gdf.iloc[:, 0:0]
 
         # ConstructionDate is the one datetime worth keeping, and only as a year.
         if "construction_year" in props.columns:
@@ -358,10 +430,21 @@ def main() -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     total = 0
+    try:
+        from pyogrio import list_layers
+
+        plan = [name for name, _geom in list_layers(gdb) if str(name).startswith("P")]
+        if plan:
+            print("Plan dataset layers:", ", ".join(plan))
+    except Exception:
+        pass
+
     for spec in SPECS:
         if args.only and spec["out"] not in args.only:
             continue
         fc, n = build(spec, gdb)
+        if fc is None:
+            continue
         path = out_dir / f"{spec['out']}.geojson"
         path.write_text(json.dumps(fc, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
         size = path.stat().st_size
