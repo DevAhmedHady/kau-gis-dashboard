@@ -1326,6 +1326,7 @@ input {
   right: 12px;
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
   gap: 8px;
 }
 
@@ -1339,13 +1340,17 @@ input {
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--border) !important;
   box-shadow: var(--shadow-md);
-  border-radius: 14px !important;
+  border-radius: 10px !important;
   overflow: hidden;
+  width: max-content;
+  flex: 0 0 auto;
 }
 
 .maplibregl-ctrl-group button {
-  width: 36px !important;
-  height: 36px !important;
+  width: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  height: 28px !important;
   background: transparent !important;
 }
 
